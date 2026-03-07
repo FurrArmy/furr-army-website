@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Furr Army Lore Archive</title>
+
+<style>
+
+body{
+background:#0b0f0f;
+color:#00ffaa;
+font-family:Consolas;
+margin:0;
+}
+
+header{
+text-align:center;
+padding:20px;
+border-bottom:2px solid #00ffaa;
+}
+
+.container{
+display:grid;
+grid-template-columns:280px 1fr;
+height:100vh;
+}
+
+.sidebar{
+border-right:1px solid #00ffaa;
+padding:20px;
+}
+
+.sidebar button{
+display:block;
+width:100%;
+margin:10px 0;
+padding:10px;
+background:black;
+color:#00ffaa;
+border:1px solid #00ffaa;
+cursor:pointer;
+}
+
+.main{
+padding:30px;
+}
+
+</style>
+
+<script>
+
+function loadLore(entry){
+
+var text="";
+
+if(entry=="founding"){
+text="FOUNDING OF THE FURR ARMY\nYear: 2042\n\nThe Furr Army was established to defend the world from emerging threats and unknown anomalies.";
+}
+
+if(entry=="reelmind"){
+text="REELMIND CORPORATION\n\nA powerful research organization responsible for advanced technology and experimental weapons.";
+}
+
+if(entry=="war"){
+text="THE GREAT BORDER WAR\n\nA large conflict that forced the Furr Army to mobilize all divisions.";
+}
+
+if(entry=="hepc"){
+text="HEPC FACILITY\n\nHigh Energy Particle Collider research site used for experimental physics and anomaly detection.";
+}
+
+document.getElementById("loreviewer").innerText=text;
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<header>
+<h1>FURR ARMY LORE ARCHIVE</h1>
+<p>Historical Database</p>
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>Lore Files</h3>
+
+<button onclick="loadLore('founding')">Army Founding</button>
+<button onclick="loadLore('reelmind')">Reelmind Corporation</button>
+<button onclick="loadLore('war')">Great Border War</button>
+<button onclick="loadLore('hepc')">HEPC Facility</button>
+
+</div>
+
+<div class="main">
+
+<h2>Archive Viewer</h2>
+
+<pre id="loreviewer">
+Select a lore file to read.
+</pre>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
