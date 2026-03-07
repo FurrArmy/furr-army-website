@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Black Archive Database</title>
+
+<style>
+
+body{
+background:#020404;
+color:#00ff9c;
+font-family:Consolas;
+margin:0;
+}
+
+header{
+text-align:center;
+padding:20px;
+border-bottom:2px solid #00ff9c;
+}
+
+.container{
+display:grid;
+grid-template-columns:300px 1fr;
+height:100vh;
+}
+
+.sidebar{
+border-right:1px solid #00ff9c;
+padding:20px;
+}
+
+.sidebar button{
+display:block;
+width:100%;
+margin:10px 0;
+background:black;
+color:#00ff9c;
+border:1px solid #00ff9c;
+padding:10px;
+cursor:pointer;
+}
+
+.main{
+padding:30px;
+}
+
+</style>
+
+<script>
+
+function loadFile(file){
+
+var text="";
+
+if(file=="operation"){
+text="Operation Night Fang\nStatus: Classified\nCommander Approval Required";
+}
+
+if(file=="anomaly"){
+text="Anomaly Report\nSubject: Unknown energy signature detected near research zone.";
+}
+
+if(file=="protocol"){
+text="Protocol SKYFALL\nAuthorization required for orbital defense activation.";
+}
+
+if(file=="warhead"){
+text="Warhead Protocol\nLaunch authorization requires 3 High Command officers.";
+}
+
+document.getElementById("filecontent").innerText=text;
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<header>
+<h1>BLACK ARCHIVE DATABASE</h1>
+<p>Clearance Level: OMEGA</p>
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>Archive Files</h3>
+
+<button onclick="loadFile('operation')">Operation Night Fang</button>
+
+<button onclick="loadFile('anomaly')">Anomaly Report</button>
+
+<button onclick="loadFile('protocol')">Protocol SKYFALL</button>
+
+<button onclick="loadFile('warhead')">Warhead Authorization</button>
+
+</div>
+
+<div class="main">
+
+<h2>File Viewer</h2>
+
+<pre id="filecontent">
+Select a classified file to view.
+</pre>
+
+</div>
+
+</div>
+
+</body>
+</html>
