@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Classified Archive Access</title>
+
+<script>
+
+function unlock(){
+
+var pass=document.getElementById("password").value;
+
+if(pass=="BLACK-OMEGA"){
+window.location="classified_documents.html";
+}
+
+else{
+alert("ACCESS DENIED");
+}
+
+}
+
+</script>
+
+</head>
+
+<body style="background:black;color:#00ffaa;text-align:center;font-family:monospace;">
+
+<h1>FURR ARMY CLASSIFIED ARCHIVE</h1>
+
+<p>Clearance Required</p>
+
+<input type="password" id="password" placeholder="Enter Access Code">
+
+<br><br>
+
+<button onclick="unlock()">ACCESS DATABASE</button>
+
+</body>
+</html>
