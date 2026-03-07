@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Furr Army Login</title>
+
+<script>
+
+function login(){
+
+var user = document.getElementById("user").value;
+var pass = document.getElementById("pass").value;
+
+if(user=="Mike" && pass=="1505"){
+window.location="soldier_dashboard.html";
+}
+
+else if(user=="officer" && pass=="beta456"){
+window.location="officer_dashboard.html";
+}
+
+else if(user=="commander" && pass=="omega999"){
+window.location="command_dashboard.html";
+}
+
+else{
+alert("ACCESS DENIED");
+}
+
+}
+
+</script>
+
+</head>
+
+<body style="background:black;color:#00ff9c;text-align:center;font-family:monospace;">
+
+<h1>FURR ARMY COMMAND LOGIN</h1>
+
+<p>Enter Credentials</p>
+
+<input id="user" placeholder="Username"><br><br>
+
+<input type="password" id="pass" placeholder="Password"><br><br>
+
+<button onclick="login()">LOGIN</button>
+
+</body>
+</html>
