@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Furr Army Command Dashboard</title>
+
+<style>
+
+body{
+background:#0b0f0f;
+color:#00ff9c;
+font-family:Consolas,monospace;
+margin:0;
+}
+
+header{
+background:#050707;
+padding:20px;
+text-align:center;
+border-bottom:2px solid #00ff9c;
+}
+
+.container{
+display:grid;
+grid-template-columns:250px 1fr;
+height:100vh;
+}
+
+.sidebar{
+background:#060909;
+padding:20px;
+border-right:2px solid #00ff9c;
+}
+
+.sidebar a{
+display:block;
+color:#00ff9c;
+text-decoration:none;
+margin:15px 0;
+}
+
+.main{
+padding:20px;
+}
+
+.card{
+background:#050707;
+border:1px solid #00ff9c;
+padding:20px;
+margin-bottom:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>FURR ARMY COMMAND NETWORK</h1>
+<p>Secure Military Interface</p>
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>COMMAND</h3>
+
+<a href="dashboard.html">Dashboard</a>
+<a href="operations.html">Operations</a>
+<a href="divisions.html">Divisions</a>
+<a href="archive.html">Classified Archive</a>
+<a href="login.html">Logout</a>
+
+</div>
+
+<div class="main">
+
+<div class="card">
+<h2>System Status</h2>
+<p>Command Network: ONLINE</p>
+<p>Defense Grid: ACTIVE</p>
+<p>Satellite Link: CONNECTED</p>
+</div>
+
+<div class="card">
+<h2>Active Operations</h2>
+<ul>
+<li>Operation SkyShield</li>
+<li>Border Patrol Alpha</li>
+<li>Cyber Defense Protocol</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>Security Alerts</h2>
+<ul>
+<li>No intrusions detected</li>
+<li>Archive access restricted</li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
