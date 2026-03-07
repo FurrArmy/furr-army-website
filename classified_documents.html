@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Classified Documents</title>
+
+<style>
+
+body{
+background:#020404;
+color:#00ffaa;
+font-family:Consolas;
+}
+
+.container{
+display:grid;
+grid-template-columns:250px 1fr;
+}
+
+.sidebar{
+padding:20px;
+border-right:1px solid #00ffaa;
+}
+
+.sidebar button{
+display:block;
+width:100%;
+margin:10px 0;
+padding:10px;
+background:black;
+color:#00ffaa;
+border:1px solid #00ffaa;
+}
+
+.main{
+padding:30px;
+}
+
+</style>
+
+<script>
+
+function loadDoc(doc){
+
+var text="";
+
+if(doc=="report1"){
+text="CLASSIFIED REPORT\n\nFurr Army surveillance satellites detected unknown signals.";
+}
+
+if(doc=="report2"){
+text="WAR PROTOCOL\n\nOnly Grand High Command may authorize warhead deployment.";
+}
+
+if(doc=="report3"){
+text="HEPC INCIDENT\n\nEnergy surge detected in particle collider chamber.";
+}
+
+document.getElementById("viewer").innerText=text;
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<h1>CLASSIFIED DOCUMENT DATABASE</h1>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h3>Documents</h3>
+
+<button onclick="loadDoc('report1')">Satellite Report</button>
+
+<button onclick="loadDoc('report2')">War Protocol</button>
+
+<button onclick="loadDoc('report3')">HEPC Incident</button>
+
+</div>
+
+<div class="main">
+
+<h2>Document Viewer</h2>
+
+<pre id="viewer">
+Select a document to read.
+</pre>
+
+</div>
+
+</div>
+
+</body>
+</html>
