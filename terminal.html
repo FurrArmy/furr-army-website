@@ -115,8 +115,10 @@ setTimeout(()=>slowPrint("Hack attempt FAILED."),11500);
 
 }
 
-if(cmd === "/classified"){
+else if(cmd === "/classified"){
 
+terminal.innerHTML += "<br>";
+  
 slowPrintLine("ACCESS REQUEST: CLASSIFIED ARCHIVE");
 slowPrintLine("Authentication bypass attempt started...");
 slowPrintLine("Connecting to secure archive node...");
@@ -141,6 +143,8 @@ slowPrintLine("Hack attempt FAILED.");
 }
 
 }, 3000); // 3 seconds × 20 steps = ~1 minute
+
+}  
 
 }  
   
