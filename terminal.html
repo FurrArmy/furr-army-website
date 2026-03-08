@@ -1,34 +1,47 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<title>Command Terminal</title>
+  <title>Command Terminal</title>
+  <style>
+    body {
+      background: black;
+      color: #00ffaa;
+      font-family: monospace;
+      padding: 30px;
+    }
 
-<style>
+    #terminal {
+      white-space: pre-line;
+      max-height: 500px;
+      overflow-y: auto;
+    }
 
-body{
-background:black;
-color:#00ffaa;
-font-family:monospace;
-padding:30px;
-}
+    #cursor {
+      animation: blink 1s infinite;
+    }
 
-#terminal{
-white-space:pre-line;
-}
+    @keyframes blink {
+      0% {opacity:1;}
+      50% {opacity:0;}
+      100% {opacity:1;}
+    }
 
-#cursor{
-animation:blink 1s infinite;
-}
+    input {
+      background: black;
+      color: #00ffaa;
+      border: 1px solid #00ffaa;
+      font-family: monospace;
+      padding: 5px;
+    }
 
-@keyframes blink{
-0%{opacity:1;}
-50%{opacity:0;}
-100%{opacity:1;}
-}
-
-</style>
-
+    button {
+      background: #00ffaa;
+      color: black;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -44,125 +57,97 @@ animation:blink 1s infinite;
 <button onclick="runCommand()">Execute</button>
 
 <script>
-
 const terminal = document.getElementById("terminal");
+const input = document.getElementById("cmd");
 
-function slowPrint(text, speed = 35){
-let i = 0;
-
-function type(){
-if(i < text.length){
-terminal.innerHTML += text.charAt(i);
-i++;
-setTimeout(type,speed);
-}else{
-terminal.innerHTML += "<br>";
-}
-}
-
-type();
-}
-
-function runCommand(){
-
-let cmd = document.getElementById("cmd").value.toLowerCase();
-
-if(cmd === "launch"){
-
-terminal.innerHTML += "<br>";
-
-slowPrint("COMMAND ACCEPTED");
-slowPrint("Loading Warhead Control System...");
-slowPrint("Accessing Secure Network...");
-slowPrint("Decrypting Launch Authorization...");
-
-setTimeout(()=>slowPrint("AUTHORIZATION GRANTED"),3000);
-
-setTimeout(()=>slowPrint("Opening Launch Silo..."),5000);
-
-setTimeout(()=>slowPrint("Fuel Systems Online..."),7000);
-
-setTimeout(()=>slowPrint("Target Coordinates Locked"),9000);
-
-setTimeout(()=>slowPrint("Beginning Countdown"),11000);
-
-setTimeout(()=>slowPrint("5"),13000);
-setTimeout(()=>slowPrint("4"),14000);
-setTimeout(()=>slowPrint("3"),15000);
-setTimeout(()=>slowPrint("2"),16000);
-setTimeout(()=>slowPrint("1"),17000);
-
-setTimeout(()=>slowPrint("WARHEAD LAUNCH SIMULATION COMPLETE"),18500);
-
+function slowPrint(text, speed = 35, callback = null){
+  let i = 0;
+  function type() {
+    if(i < text.length){
+      terminal.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    } else {
+      terminal.innerHTML += "<br>";
+      if(callback) callback();
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+  }
+  type();
 }
 
-if(cmd === "/hack isd"){
+function runCommand() {
+  let cmd = input.value.toLowerCase();
+  input.value = ""; // clear input after command
 
-terminal.innerHTML += "<br>";
+  if(cmd === "help"){
+    slowPrint("AVAILABLE COMMANDS:");
+    slowPrint("help");
+    slowPrint("launch");
+    slowPrint("/hack isd");
+    slowPrint("/classified");
+    slowPrint("clear");
+  }
+  else if(cmd === "launch"){
+    slowPrint("COMMAND ACCEPTED");
+    slowPrint("Loading Warhead Control System...");
+    slowPrint("Accessing Secure Network...");
+    slowPrint("Decrypting Launch Authorization...");
+    setTimeout(()=>slowPrint("AUTHORIZATION GRANTED"), 3000);
+    setTimeout(()=>slowPrint("Opening Launch Silo..."), 5000);
+    setTimeout(()=>slowPrint("Fuel Systems Online..."), 7000);
+    setTimeout(()=>slowPrint("Target Coordinates Locked"), 9000);
+    setTimeout(()=>slowPrint("Beginning Countdown"), 11000);
+    setTimeout(()=>slowPrint("5"), 13000);
+    setTimeout(()=>slowPrint("4"), 14000);
+    setTimeout(()=>slowPrint("3"), 15000);
+    setTimeout(()=>slowPrint("2"), 16000);
+    setTimeout(()=>slowPrint("1"), 17000);
+    setTimeout(()=>slowPrint("WARHEAD LAUNCH SIMULATION COMPLETE"), 18500);
+  }
+  else if(cmd === "/hack isd"){
+    slowPrint("COMMAND RECEIVED: /hack ISD");
+    slowPrint("Attempting connection to ISD secure servers...");
+    slowPrint("Bypassing firewall...");
+    slowPrint("Injecting access packet...");
+    slowPrint("Searching for vulnerabilities...");
+    setTimeout(()=>slowPrint("ACCESS DENIED"), 4000);
+    setTimeout(()=>slowPrint("ISD Intrusion Detection System Triggered"), 5500);
+    setTimeout(()=>slowPrint("SECURITY ALERT: Unauthorized access attempt"), 7000);
+    setTimeout(()=>slowPrint("Trace protocol started..."), 8500);
+    setTimeout(()=>slowPrint("Connection terminated."), 10000);
+    setTimeout(()=>slowPrint("Hack attempt FAILED."), 11500);
+  }
+  else if(cmd === "/classified"){
+    slowPrint("ACCESS REQUEST: CLASSIFIED ARCHIVE");
+    slowPrint("Authentication bypass attempt started...");
+    slowPrint("Connecting to secure archive node...");
 
-slowPrint("COMMAND RECEIVED: /hack ISD");
-slowPrint("Attempting connection to ISD secure servers...");
-slowPrint("Bypassing firewall...");
-slowPrint("Injecting access packet...");
-slowPrint("Searching for vulnerabilities...");
-
-setTimeout(()=>slowPrint("ACCESS DENIED"),4000);
-setTimeout(()=>slowPrint("ISD Intrusion Detection System Triggered"),5500);
-setTimeout(()=>slowPrint("SECURITY ALERT: Unauthorized access attempt"),7000);
-setTimeout(()=>slowPrint("Trace protocol started..."),8500);
-setTimeout(()=>slowPrint("Connection terminated."),10000);
-setTimeout(()=>slowPrint("Hack attempt FAILED."),11500);
-
+    let progress = 0;
+    let hacking = setInterval(function(){
+      progress += 5;
+      slowPrint("Decrypting archive... " + progress + "%");
+      if(progress >= 100){
+        clearInterval(hacking);
+        slowPrint("ACCESS DENIED");
+        slowPrint("SECURITY PROTOCOL TRIGGERED");
+        slowPrint("Classified Archive remains locked.");
+        slowPrint("Hack attempt FAILED.");
+      }
+    }, 3000);
+  }
+  else if(cmd === "clear"){
+    terminal.innerHTML = "";
+  }
+  else {
+    slowPrint("Unknown command. Type 'help' for a list of commands.");
+  }
 }
 
-else if(cmd === "/classified"){
-
-terminal.innerHTML += "<br>";
-  
-slowPrintLine("ACCESS REQUEST: CLASSIFIED ARCHIVE");
-slowPrintLine("Authentication bypass attempt started...");
-slowPrintLine("Connecting to secure archive node...");
-
-let progress = 0;
-
-let hacking = setInterval(function(){
-
-progress += 5;
-
-slowPrintLine("Decrypting archive... " + progress + "%");
-
-if(progress >= 100){
-
-clearInterval(hacking);
-
-slowPrintLine("ACCESS DENIED");
-slowPrintLine("SECURITY PROTOCOL TRIGGERED");
-slowPrintLine("Classified Archive remains locked.");
-slowPrintLine("Hack attempt FAILED.");
-
-}
-
-}, 3000); // 3 seconds × 20 steps = ~1 minute
-
-}  
-
-}  
-  
-if(cmd === "help"){
-
-slowPrint("AVAILABLE COMMANDS:");
-slowPrint("help");
-slowPrint("launch");
-slowPrint("clear");
-
-}
-
-if(cmd === "clear"){
-terminal.innerHTML = "";
-}
-
-}
-
+// Optional: allow pressing Enter to run command
+input.addEventListener("keypress", function(e){
+  if(e.key === "Enter") runCommand();
+});
 </script>
 
 </body>
