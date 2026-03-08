@@ -114,6 +114,35 @@ setTimeout(()=>slowPrint("Connection terminated."),10000);
 setTimeout(()=>slowPrint("Hack attempt FAILED."),11500);
 
 }
+
+else if(cmd === "/classified"){
+
+slowPrintLine("ACCESS REQUEST: CLASSIFIED ARCHIVE");
+slowPrintLine("Authentication bypass attempt started...");
+slowPrintLine("Connecting to secure archive node...");
+
+let progress = 0;
+
+let hacking = setInterval(function(){
+
+progress += 5;
+
+slowPrintLine("Decrypting archive... " + progress + "%");
+
+if(progress >= 100){
+
+clearInterval(hacking);
+
+slowPrintLine("ACCESS DENIED");
+slowPrintLine("SECURITY PROTOCOL TRIGGERED");
+slowPrintLine("Classified Archive remains locked.");
+slowPrintLine("Hack attempt FAILED.");
+
+}
+
+}, 3000); // 3 seconds × 20 steps = ~1 minute
+
+}  
   
 if(cmd === "help"){
 
