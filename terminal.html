@@ -39,7 +39,6 @@ const terminal=document.getElementById("terminal");
 const input=document.getElementById("cmd");
 const cursor=document.getElementById("cursor");
 
-// Multi-user credentials
 const credentials = [
   {username:"Lt.Mike", password:"HMoUF"},
   {username:"Travis", password:"SCFA"}
@@ -47,6 +46,7 @@ const credentials = [
 
 let failedAttempts=0;
 let lockdown=false;
+let currentUser="";
 
 // LOGIN FUNCTION
 function login(){
@@ -57,12 +57,14 @@ function login(){
   const validUser = credentials.find(u => u.username===user && u.password===pass);
 
   if(validUser){
+    currentUser = validUser.username;
     document.getElementById("loginBox").style.display="none";
     terminal.style.display="block";
     cursor.style.display="inline";
     input.style.display="inline";
     document.getElementById("executeBtn").style.display="inline";
-    showAlert("Login successful. Welcome, "+validUser.username+"!","green",true);
+    showAlert("Login successful. Welcome, "+currentUser+"!","green",true);
+    showPrompt();
     slowPrint("Type 'help' to see available commands.");
   } else{
     failedAttempts++;
@@ -80,12 +82,19 @@ function login(){
   }
 }
 
+// PROMPT FUNCTION
+function showPrompt(){
+  if(lockdown) return;
+  terminal.innerHTML+="["+currentUser+"@FurrArmy]$ ";
+  terminal.scrollTop=terminal.scrollHeight;
+}
+
 // TERMINAL FUNCTIONS
 function slowPrint(text,speed=35,callback=null){
   let i=0;
   function type(){
     if(i<text.length){ terminal.innerHTML+=text.charAt(i); i++; setTimeout(type,speed); }
-    else{ terminal.innerHTML+="<br>"; if(callback) callback(); terminal.scrollTop=terminal.scrollHeight; }
+    else{ terminal.innerHTML+="<br>"; if(callback) callback(); terminal.scrollTop=terminal.scrollHeight; showPrompt(); }
   }
   type();
 }
@@ -112,7 +121,6 @@ function runCommand(){
     slowPrint("clear");
   }
 
-  // CODE GREEN
   else if(cmd==="code green"){
     showAlert("🟢 CODE GREEN","green",true);
     showAlert("Normal Operation Status","green");
@@ -122,7 +130,6 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE ORANGE
   else if(cmd==="code orange"){
     showAlert("🟠 CODE ORANGE","orange",true);
     showAlert("Investigation Status: Something is Wrong","orange");
@@ -131,7 +138,6 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE YELLOW
   else if(cmd==="code yellow"){
     showAlert("🟡 CODE YELLOW","yellow",true);
     showAlert("Elevated Readiness: Prepare to Move","yellow");
@@ -140,7 +146,6 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE RED
   else if(cmd==="code red"){
     showAlert("🔴 CODE RED","red",true);
     showAlert("Active Threat: Engage","red");
@@ -149,7 +154,6 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE BLACK
   else if(cmd==="code black"){
     showAlert("⚫ CODE BLACK","black",true);
     showAlert("Critical Compromise: Contain or Collapse","black");
@@ -158,7 +162,6 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // /warhead D
   else if(cmd==="/warhead d"){
     showAlert("COMMAND RECEIVED: /warhead D","red");
     showAlert("Initializing Warhead Hack Simulation (90s)...","red");
@@ -171,7 +174,6 @@ function runCommand(){
     },intervalTime);
   }
 
-  // /doom
   else if(cmd==="/doom"){
     showAlert("SECRET COMMAND INITIATED: /doom","orange");
     showAlert("Initializing Countdown...","orange");
