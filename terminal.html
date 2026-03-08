@@ -39,22 +39,30 @@ const terminal=document.getElementById("terminal");
 const input=document.getElementById("cmd");
 const cursor=document.getElementById("cursor");
 
-const credentials={username:"Lt.Mike", password:"HMoUF"};
+// Multi-user credentials
+const credentials = [
+  {username:"Lt.Mike", password:"HMoUF"},
+  {username:"Travis", password:"SCFA"}
+];
+
 let failedAttempts=0;
 let lockdown=false;
 
+// LOGIN FUNCTION
 function login(){
   if(lockdown) return;
   const user=document.getElementById("username").value;
   const pass=document.getElementById("password").value;
 
-  if(user===credentials.username && pass===credentials.password){
+  const validUser = credentials.find(u => u.username===user && u.password===pass);
+
+  if(validUser){
     document.getElementById("loginBox").style.display="none";
     terminal.style.display="block";
     cursor.style.display="inline";
     input.style.display="inline";
     document.getElementById("executeBtn").style.display="inline";
-    showAlert("Login successful. Welcome, "+user+"!","green",true);
+    showAlert("Login successful. Welcome, "+validUser.username+"!","green",true);
     slowPrint("Type 'help' to see available commands.");
   } else{
     failedAttempts++;
@@ -66,13 +74,13 @@ function login(){
       showAlert("Too many failed login attempts.","black",true);
       showAlert("All terminal access disabled.","black",true);
       showAlert("Authorities notified.","black",true);
-      // Show terminal and cursor for alerts
       terminal.style.display="block";
       cursor.style.display="inline";
     }
   }
 }
 
+// TERMINAL FUNCTIONS
 function slowPrint(text,speed=35,callback=null){
   let i=0;
   function type(){
@@ -90,18 +98,21 @@ function showAlert(message,level="green",flicker=false){
   terminal.appendChild(span); terminal.innerHTML+="<br>"; terminal.scrollTop=terminal.scrollHeight;
 }
 
+// COMMANDS
 function runCommand(){
   if(lockdown){ showAlert("Access denied. Terminal in lockdown.","black",true); return; }
 
   let cmd=input.value.toLowerCase(); input.value="";
 
   if(cmd==="help"){ 
-    slowPrint("AVAILABLE COMMANDS:"); slowPrint("help"); slowPrint("launch"); slowPrint("/hack isd"); 
+    slowPrint("AVAILABLE COMMANDS:");
+    slowPrint("help"); slowPrint("launch"); slowPrint("/hack isd"); 
     slowPrint("/classified"); slowPrint("/warhead d"); slowPrint("/doom"); 
     slowPrint("code green"); slowPrint("code orange"); slowPrint("code yellow"); slowPrint("code red"); slowPrint("code black"); 
     slowPrint("clear");
   }
 
+  // CODE GREEN
   else if(cmd==="code green"){
     showAlert("🟢 CODE GREEN","green",true);
     showAlert("Normal Operation Status","green");
@@ -111,6 +122,7 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
+  // CODE ORANGE
   else if(cmd==="code orange"){
     showAlert("🟠 CODE ORANGE","orange",true);
     showAlert("Investigation Status: Something is Wrong","orange");
@@ -119,6 +131,7 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
+  // CODE YELLOW
   else if(cmd==="code yellow"){
     showAlert("🟡 CODE YELLOW","yellow",true);
     showAlert("Elevated Readiness: Prepare to Move","yellow");
@@ -127,6 +140,7 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
+  // CODE RED
   else if(cmd==="code red"){
     showAlert("🔴 CODE RED","red",true);
     showAlert("Active Threat: Engage","red");
@@ -135,6 +149,7 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
+  // CODE BLACK
   else if(cmd==="code black"){
     showAlert("⚫ CODE BLACK","black",true);
     showAlert("Critical Compromise: Contain or Collapse","black");
@@ -143,6 +158,7 @@ function runCommand(){
     setTimeout(()=>clearInterval(interval),30000);
   }
 
+  // /warhead D
   else if(cmd==="/warhead d"){
     showAlert("COMMAND RECEIVED: /warhead D","red");
     showAlert("Initializing Warhead Hack Simulation (90s)...","red");
@@ -155,6 +171,7 @@ function runCommand(){
     },intervalTime);
   }
 
+  // /doom
   else if(cmd==="/doom"){
     showAlert("SECRET COMMAND INITIATED: /doom","orange");
     showAlert("Initializing Countdown...","orange");
