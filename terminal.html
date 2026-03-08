@@ -1,86 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Command Terminal</title>
+  <title>Furr Army Command Terminal</title>
   <style>
-    body {
-      background: black;
-      color: #00ffaa;
-      font-family: monospace;
-      padding: 30px;
-    }
-
-    #terminal {
-      white-space: pre-line;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-
-    #cursor {
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0% {opacity:1;}
-      50% {opacity:0;}
-      100% {opacity:1;}
-    }
-
-    input {
-      background: black;
-      color: #00ffaa;
-      border: 1px solid #00ffaa;
-      font-family: monospace;
-      padding: 5px;
-    }
-
-    button {
-      background: #00ffaa;
-      color: black;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-
-    .progress-bar {
-      display: inline-block;
-      width: 100%;
-      border: 1px solid #00ffaa;
-      margin-top: 5px;
-    }
-
-    .progress-fill {
-      display: inline-block;
-      height: 1em;
-      background: #00ffaa;
-      width: 0%;
-    }
-
-    .flicker {
-      animation: flicker 0.1s infinite alternate;
-    }
-
-    @keyframes flicker {
-      0% {opacity:1;}
-      50% {opacity:0.2;}
-      100% {opacity:1;}
-    }
-
-    .alert {
-      color: red;
-    }
+    body { background:black; color:#00ffaa; font-family:monospace; padding:30px; }
+    #terminal { white-space: pre-line; max-height: 500px; overflow-y:auto; }
+    #cursor { animation: blink 1s infinite; }
+    @keyframes blink { 0% {opacity:1;} 50% {opacity:0;} 100% {opacity:1;} }
+    input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
+    button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
+    .flicker { animation: flicker 0.1s infinite alternate; }
+    @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
+    .alert { font-weight:bold; }
+    .green { color:#00ffaa; }
+    .orange { color:#ff9900; }
+    .yellow { color:#ffff00; }
+    .red { color:#ff0000; }
+    .black { color:#555555; }
+    .progress-bar { display:inline-block; width:100%; border:1px solid #00ffaa; margin-top:5px; }
+    .progress-fill { display:inline-block; height:1em; background:#00ffaa; width:0%; }
   </style>
 </head>
-
 <body>
 
 <h2>FURR ARMY COMMAND TERMINAL</h2>
-
 <div id="terminal"></div>
 <span id="cursor">█</span>
-
 <br><br>
-
 <input id="cmd" placeholder="Enter command">
 <button onclick="runCommand()">Execute</button>
 
@@ -88,151 +34,162 @@
 const terminal = document.getElementById("terminal");
 const input = document.getElementById("cmd");
 
-function slowPrint(text, speed = 35, callback = null){
-  let i = 0;
-  function type() {
-    if(i < text.length){
-      terminal.innerHTML += text.charAt(i);
+function slowPrint(text,speed=35,callback=null){
+  let i=0;
+  function type(){
+    if(i<text.length){
+      terminal.innerHTML+=text.charAt(i);
       i++;
-      setTimeout(type, speed);
-    } else {
-      terminal.innerHTML += "<br>";
+      setTimeout(type,speed);
+    }else{
+      terminal.innerHTML+="<br>";
       if(callback) callback();
-      terminal.scrollTop = terminal.scrollHeight;
+      terminal.scrollTop=terminal.scrollHeight;
     }
   }
   type();
 }
 
-function runCommand() {
-  let cmd = input.value.toLowerCase();
-  input.value = "";
+function showAlert(message,level="green",flicker=false){
+  const span=document.createElement("span");
+  span.classList.add("alert");
+  span.classList.add(level);
+  if(flicker) span.classList.add("flicker");
+  span.innerText=message;
+  terminal.appendChild(span);
+  terminal.innerHTML+="<br>";
+  terminal.scrollTop=terminal.scrollHeight;
+}
 
-  if(cmd === "help"){
+function runCommand(){
+  let cmd=input.value.toLowerCase();
+  input.value="";
+
+  if(cmd==="help"){
     slowPrint("AVAILABLE COMMANDS:");
     slowPrint("help");
     slowPrint("launch");
     slowPrint("/hack isd");
     slowPrint("/classified");
     slowPrint("/warhead d");
-    slowPrint("/doom (secret)");
+    slowPrint("/doom");
+    slowPrint("code green");
+    slowPrint("code orange");
+    slowPrint("code yellow");
+    slowPrint("code red");
+    slowPrint("code black");
     slowPrint("clear");
   }
-  else if(cmd === "launch"){
-    slowPrint("COMMAND ACCEPTED");
-    slowPrint("Loading Warhead Control System...");
-    slowPrint("Accessing Secure Network...");
-    slowPrint("Decrypting Launch Authorization...");
-    setTimeout(()=>slowPrint("AUTHORIZATION GRANTED"), 3000);
-    setTimeout(()=>slowPrint("Opening Launch Silo..."), 5000);
-    setTimeout(()=>slowPrint("Fuel Systems Online..."), 7000);
-    setTimeout(()=>slowPrint("Target Coordinates Locked"), 9000);
-    setTimeout(()=>slowPrint("Beginning Countdown"), 11000);
-    setTimeout(()=>slowPrint("5"), 13000);
-    setTimeout(()=>slowPrint("4"), 14000);
-    setTimeout(()=>slowPrint("3"), 15000);
-    setTimeout(()=>slowPrint("2"), 16000);
-    setTimeout(()=>slowPrint("1"), 17000);
-    setTimeout(()=>slowPrint("WARHEAD LAUNCH SIMULATION COMPLETE"), 18500);
-  }
-  else if(cmd === "/hack isd"){
-    slowPrint("COMMAND RECEIVED: /hack ISD");
-    slowPrint("Attempting connection to ISD secure servers...");
-    slowPrint("Bypassing firewall...");
-    slowPrint("Injecting access packet...");
-    slowPrint("Searching for vulnerabilities...");
-    setTimeout(()=>slowPrint("ACCESS DENIED"), 4000);
-    setTimeout(()=>slowPrint("ISD Intrusion Detection System Triggered"), 5500);
-    setTimeout(()=>slowPrint("SECURITY ALERT: Unauthorized access attempt"), 7000);
-    setTimeout(()=>slowPrint("Trace protocol started..."), 8500);
-    setTimeout(()=>slowPrint("Connection terminated."), 10000);
-    setTimeout(()=>slowPrint("Hack attempt FAILED."), 11500);
-  }
-  else if(cmd === "/classified"){
-    slowPrint("ACCESS REQUEST: CLASSIFIED ARCHIVE");
-    slowPrint("Authentication bypass attempt started...");
-    slowPrint("Connecting to secure archive node...");
 
-    let progress = 0;
-    let hacking = setInterval(function(){
-      progress += 5;
-      slowPrint("Decrypting archive... " + progress + "%");
-      if(progress >= 100){
-        clearInterval(hacking);
-        slowPrint("ACCESS DENIED");
-        slowPrint("SECURITY PROTOCOL TRIGGERED");
-        slowPrint("Classified Archive remains locked.");
-        slowPrint("Hack attempt FAILED.");
-      }
-    }, 3000);
+  // CODE GREEN
+  else if(cmd==="code green"){
+    showAlert("🟢 CODE GREEN","green",true);
+    showAlert("Normal Operation Status","green");
+    showAlert("Full operational stability. No active threat.","green");
+
+    let alerts=["GSP standard patrols.","6th FATD maintenance rotation.","FAIA monitoring external networks.","FAISD flagging no irregularities.","Warhead containment stable."];
+    let interval=setInterval(()=>{
+      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"green",Math.random()<0.3);
+    },3000);
+    setTimeout(()=>clearInterval(interval),30000);
   }
-  else if(cmd === "/warhead d"){
-    slowPrint("COMMAND RECEIVED: /warhead D");
-    slowPrint("Initializing Warhead Hack Simulation (90s)...");
 
-    terminal.innerHTML += '<div class="progress-bar"><div class="progress-fill" id="warhead-bar"></div></div><br>';
-    const bar = document.getElementById("warhead-bar");
-    let progress = 0;
-    const intervalTime = 90 * 1000 / 100;
+  // CODE ORANGE
+  else if(cmd==="code orange"){
+    showAlert("🟠 CODE ORANGE","orange",true);
+    showAlert("Investigation Status: Something is Wrong","orange");
+    let alerts=["FAIA launching investigation.","FAISD increasing internal observation.","GSP on tactical standby.","MP patrol density increased."];
+    let interval=setInterval(()=>{
+      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"orange",Math.random()<0.5);
+    },2500);
+    setTimeout(()=>clearInterval(interval),30000);
+  }
 
-    const hackInterval = setInterval(() => {
+  // CODE YELLOW
+  else if(cmd==="code yellow"){
+    showAlert("🟡 CODE YELLOW","yellow",true);
+    showAlert("Elevated Readiness: Prepare to Move","yellow");
+    let alerts=["GSP defensive formation preparing.","6th FATD pre-positioned armor.","12th FAHT on rapid deployment standby.","4th AFC aerial patrol increased."];
+    let interval=setInterval(()=>{
+      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow",Math.random()<0.5);
+    },2000);
+    setTimeout(()=>clearInterval(interval),30000);
+  }
+
+  // CODE RED
+  else if(cmd==="code red"){
+    showAlert("🔴 CODE RED","red",true);
+    showAlert("Active Threat: Engage","red");
+    let alerts=["All divisions mobilizing.","4th AFC securing airspace.","Armor deployed by FATD.","FAHT executing rapid response.","MP enforcing emergency authority.","FAISD monitoring for betrayal.","FAIA live combat feed active."];
+    let interval=setInterval(()=>{
+      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"red",Math.random()<0.7);
+    },1500);
+    setTimeout(()=>clearInterval(interval),30000);
+  }
+
+  // CODE BLACK
+  else if(cmd==="code black"){
+    showAlert("⚫ CODE BLACK","black",true);
+    showAlert("Critical Compromise: Contain or Collapse","black");
+    let alerts=["Base full lockdown.","Section isolation protocols active.","Evacuation corridors prepared.","SD eligibility triggered.","Warhead authorization review."];
+    let interval=setInterval(()=>{
+      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"black",Math.random()<0.8);
+    },1200);
+    setTimeout(()=>clearInterval(interval),30000);
+  }
+
+  // /warhead D
+  else if(cmd==="/warhead d"){
+    showAlert("COMMAND RECEIVED: /warhead D","red");
+    showAlert("Initializing Warhead Hack Simulation (90s)...","red");
+    terminal.innerHTML+='<div class="progress-bar"><div class="progress-fill" id="warhead-bar"></div></div><br>';
+    const bar=document.getElementById("warhead-bar");
+    let progress=0;
+    const intervalTime=90*1000/100;
+    const hackInterval=setInterval(()=>{
       progress++;
-      bar.style.width = progress + "%";
-      terminal.scrollTop = terminal.scrollHeight;
-
-      if(progress >= 100){
+      bar.style.width=progress+"%";
+      terminal.scrollTop=terminal.scrollHeight;
+      if(progress>=100){
         clearInterval(hackInterval);
-        slowPrint("WARHEAD HACK FAILED");
-        slowPrint("SECURITY PROTOCOL ENGAGED");
+        showAlert("WARHEAD HACK FAILED","red",true);
+        showAlert("SECURITY PROTOCOL ENGAGED","red",true);
       }
-    }, intervalTime);
+    },intervalTime);
   }
-  // ✅ Secret dramatic hack command
-  else if(cmd === "/doom"){
-    slowPrint("SECRET COMMAND INITIATED: /doom");
-    slowPrint("Initializing Countdown...");
 
-    let countdown = 10;
-    const flickerText = document.createElement("span");
+  // /doom
+  else if(cmd==="/doom"){
+    showAlert("SECRET COMMAND INITIATED: /doom","orange");
+    showAlert("Initializing Countdown...","orange");
+    let countdown=10;
+    const flickerText=document.createElement("span");
     flickerText.classList.add("flicker");
-    flickerText.innerText = countdown;
+    flickerText.innerText=countdown;
     terminal.appendChild(flickerText);
-    terminal.innerHTML += "<br>";
-
-    const countdownInterval = setInterval(() => {
+    terminal.innerHTML+="<br>";
+    const countdownInterval=setInterval(()=>{
       countdown--;
-      flickerText.innerText = countdown;
-      terminal.scrollTop = terminal.scrollHeight;
-
-      // Random security alert
-      if(Math.random() < 0.3) {
-        const alert = document.createElement("span");
-        alert.classList.add("alert");
-        alert.innerText = "SECURITY ALERT: Intrusion detected!";
-        terminal.appendChild(alert);
-        terminal.innerHTML += "<br>";
+      flickerText.innerText=countdown;
+      terminal.scrollTop=terminal.scrollHeight;
+      if(Math.random()<0.3){
+        showAlert("SECURITY ALERT: Intrusion detected!","red",true);
       }
-
-      if(countdown <= 0){
+      if(countdown<=0){
         clearInterval(countdownInterval);
-        slowPrint("COUNTDOWN COMPLETE");
-        slowPrint("SYSTEM BREACHED FAILED");
-        slowPrint("ALL SECURITY PROTOCOLS ENGAGED");
+        showAlert("COUNTDOWN COMPLETE","red");
+        showAlert("SYSTEM BREACH FAILED","red");
+        showAlert("ALL SECURITY PROTOCOLS ENGAGED","red");
       }
-    }, 1000);
+    },1000);
   }
-  else if(cmd === "clear"){
-    terminal.innerHTML = "";
-  }
-  else {
-    slowPrint("Unknown command. Type 'help' for a list of commands.");
-  }
+
+  else if(cmd==="clear"){ terminal.innerHTML=""; }
+  else{ slowPrint("Unknown command. Type 'help' for a list of commands."); }
 }
 
-// Enter key executes command
-input.addEventListener("keypress", function(e){
-  if(e.key === "Enter") runCommand();
-});
+// Press Enter to execute
+input.addEventListener("keypress",function(e){if(e.key==="Enter") runCommand();});
 </script>
 
 </body>
