@@ -1,210 +1,311 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Furr Army Command Terminal</title>
-  <style>
-    body { background:black; color:#00ffaa; font-family:monospace; padding:30px; transition: background 0.1s; }
-    #terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
-    #cursor { animation: blink 1s infinite; }
-    @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
-    input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
-    button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
-    .flicker { animation: flicker 0.2s infinite alternate; }
-    @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
-    .alert { font-weight:bold; }
-    .green { color:#00ffaa; } .orange { color:#ff9900; } .yellow { color:#ffff00; } 
-    .red { color:#ff0000; } .black { color:#555555; }
-    .progress-bar { display:inline-block; width:100%; border:1px solid #00ffaa; margin-top:5px; }
-    .progress-fill { display:inline-block; height:1em; background:#00ffaa; width:0%; }
-    #loginBox { margin-bottom:20px; }
-  </style>
+<title>Furr Army Command Terminal</title>
+<style>
+body { background:black; color:#00ffaa; font-family:monospace; padding:30px; transition: background 0.1s; }
+#terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
+#cursor { animation: blink 1s infinite; }
+@keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
+input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
+button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
+
+.flicker { animation: flicker 0.2s infinite alternate; }
+@keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
+
+.alert { font-weight:bold; }
+.green { color:#00ffaa; }
+.orange { color:#ff9900; }
+.yellow { color:#ffff00; }
+.red { color:#ff0000; }
+.black { color:#555555; }
+
+.progress-bar { display:inline-block; width:100%; border:1px solid #00ffaa; margin-top:5px; }
+.progress-fill { display:inline-block; height:1em; background:#00ffaa; width:0%; }
+
+#loginBox { margin-bottom:20px; }
+</style>
 </head>
+
 <body>
 
 <h2>FURR ARMY COMMAND TERMINAL</h2>
 
 <div id="loginBox">
-  Username: <input id="username" placeholder="Enter username"><br><br>
-  Password: <input id="password" type="password" placeholder="Enter password"><br><br>
-  <button onclick="login()">Login</button>
+Username: <input id="username"><br><br>
+Password: <input id="password" type="password"><br><br>
+<button onclick="login()">Login</button>
 </div>
 
 <div id="terminal"></div>
 <span id="cursor" style="display:none;">█</span>
 <br><br>
-<input id="cmd" placeholder="Enter command" style="display:none;">
+
+<input id="cmd" style="display:none;">
 <button id="executeBtn" onclick="runCommand()" style="display:none;">Execute</button>
 
 <script>
+
 const terminal = document.getElementById("terminal");
 const input = document.getElementById("cmd");
 const cursor = document.getElementById("cursor");
 const body = document.body;
 
+/* USERS */
 const credentials = [
-  {username:"Lt.Mike", password:"HMoUF"},
-  {username:"Travis", password:"SCFA"}
+{username:"Lt.Mike", password:"HMoUF"},
+{username:"Travis", password:"SCFA"},
+{username:"H.K", password:"12345"} // SECRET ACCOUNT
 ];
 
 let failedAttempts = 0;
 let lockdown = false;
 let currentUser = "";
 
-// -------------------- LOGIN --------------------
+/* LOGIN */
 function login(){
-  if(lockdown) return;
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-  const validUser = credentials.find(u => u.username === user && u.password === pass);
 
-  if(validUser){
-    currentUser = validUser.username;
-    document.getElementById("loginBox").style.display = "none";
-    terminal.style.display = "block";
-    cursor.style.display = "inline";
-    input.style.display = "inline";
-    document.getElementById("executeBtn").style.display = "inline";
-    showAlert("Login successful. Welcome, "+currentUser+"!","green",true);
-    slowPrint("Type 'help' to see available commands.", 35, showPrompt);
-  } else {
-    failedAttempts++;
-    alert("Login failed. Invalid credentials.");
-    if(failedAttempts >= 3){
-      startLockdownCountdown(10,true);
-    }
-  }
+if(lockdown) return;
+
+const user = document.getElementById("username").value;
+const pass = document.getElementById("password").value;
+
+const validUser = credentials.find(u => u.username === user && u.password === pass);
+
+if(validUser){
+
+currentUser = validUser.username;
+
+document.getElementById("loginBox").style.display = "none";
+terminal.style.display = "block";
+cursor.style.display = "inline";
+input.style.display = "inline";
+document.getElementById("executeBtn").style.display = "inline";
+
+showAlert("Login successful. Welcome, "+currentUser+"!","green",true);
+
+/* SECRET ACCOUNT TRIGGER */
+if(currentUser === "H.K"){
+
+slowPrint("WARNING: RESTRICTED ROOT ACCOUNT DETECTED...",35);
+slowPrint("AUTOMATIC SYSTEM DIAGNOSTIC STARTING...",35,startSecretCheck);
+
+}
+else{
+
+slowPrint("Type 'help' to see available commands.",35,showPrompt);
+
 }
 
-// -------------------- LOCKDOWN --------------------
-function startLockdownCountdown(seconds, flashScreen=false){
-  terminal.style.display = "block";
-  cursor.style.display = "inline";
-  showAlert("⚠ SECURITY LOCKDOWN INITIATED","red",true);
-  showAlert("Too many failed login attempts.","red",true);
-  showAlert("Terminal will be disabled in "+seconds+" seconds.","red",true);
+}
+else{
 
-  let countdown = seconds;
-  const flickerText = document.createElement("span");
-  flickerText.classList.add("flicker","red");
-  flickerText.innerText = countdown;
-  terminal.appendChild(flickerText); terminal.innerHTML += "<br>";
+failedAttempts++;
+alert("Login failed.");
 
-  const alertMessages = [
-    "INTRUSION DETECTED!",
-    "FIREWALL BREACH ATTEMPT!",
-    "SECURITY PROTOCOL ENGAGED!",
-    "SYSTEM OVERRIDE INITIATED!",
-    "ALERT: UNAUTHORIZED ACCESS!"
-  ];
+if(failedAttempts >= 3){
 
-  let flashInterval = null;
-  if(flashScreen){
-    flashInterval = setInterval(()=>{
-      body.style.background = body.style.background === "red" ? "black" : "red";
-    }, 200);
-  }
+startLockdownCountdown(10,true);
 
-  const countdownInterval = setInterval(()=>{
-    countdown--;
-    flickerText.innerText = countdown;
-    terminal.scrollTop = terminal.scrollHeight;
-    if(Math.random() < 0.5){
-      showAlert(alertMessages[Math.floor(Math.random()*alertMessages.length)],"red",true);
-    }
-    if(countdown <= 0){
-      clearInterval(countdownInterval);
-      if(flashInterval) clearInterval(flashInterval);
-      body.style.background = "black";
-      lockdown = true;
-      showAlert("TERMINAL LOCKDOWN COMPLETE","black",true);
-      showAlert("ALL ACCESS DISABLED","black",true);
-      showAlert("AUTHORITIES ALERTED","black",true);
-      input.style.display = "none";
-      document.getElementById("executeBtn").style.display = "none";
-    }
-  }, 1000);
 }
 
-// -------------------- PROMPT --------------------
+}
+
+}
+
+/* LOCKDOWN */
+function startLockdownCountdown(seconds,flashScreen=false){
+
+terminal.style.display="block";
+cursor.style.display="inline";
+
+showAlert("SECURITY LOCKDOWN INITIATED","red",true);
+
+let countdown=seconds;
+
+const flickerText=document.createElement("span");
+flickerText.classList.add("flicker","red");
+flickerText.innerText=countdown;
+
+terminal.appendChild(flickerText);
+terminal.innerHTML+="<br>";
+
+const interval=setInterval(()=>{
+
+countdown--;
+flickerText.innerText=countdown;
+
+if(countdown<=0){
+
+clearInterval(interval);
+
+lockdown=true;
+
+showAlert("TERMINAL LOCKDOWN COMPLETE","black",true);
+
+input.style.display="none";
+document.getElementById("executeBtn").style.display="none";
+
+}
+
+},1000);
+
+}
+
+/* SECRET SYSTEM CHECK */
+function startSecretCheck(){
+
+showAlert("SYSTEM CHECK INITIALIZED","yellow",true);
+
+const bar=document.createElement("div");
+bar.classList.add("progress-bar");
+
+const fill=document.createElement("div");
+fill.classList.add("progress-fill");
+
+bar.appendChild(fill);
+
+terminal.appendChild(bar);
+terminal.innerHTML+="<br>";
+
+let progress=0;
+
+const alerts=[
+"CHECKING REACTOR CORE...",
+"SCANNING SECURITY NETWORK...",
+"VERIFYING WARHEAD SYSTEM...",
+"CONTACTING CENTRAL COMMAND...",
+"ANALYZING DATA STREAM..."
+];
+
+const interval=setInterval(()=>{
+
+progress+=100/120;
+fill.style.width=progress+"%";
+
+if(Math.random()<0.35){
+
+showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow");
+
+}
+
+if(progress>=100){
+
+clearInterval(interval);
+
+showAlert("SYSTEM CHECK FAILED","red",true);
+showAlert("ERROR: UNAUTHORIZED ROOT ACCOUNT","red");
+showAlert("SECURITY TRACE INITIATED","red");
+
+showPrompt();
+
+}
+
+},1000);
+
+}
+
+/* PROMPT */
 function showPrompt(){
-  if(lockdown) return;
-  terminal.innerHTML += "["+currentUser+"@FurrArmy]$ ";
-  terminal.scrollTop = terminal.scrollHeight;
+
+if(lockdown) return;
+
+terminal.innerHTML+="["+currentUser+"@FurrArmy]$ ";
+terminal.scrollTop=terminal.scrollHeight;
+
 }
 
-// -------------------- SLOW PRINT --------------------
-function slowPrint(text, speed=35, callback=null){
-  let i = 0;
-  function type(){
-    if(i < text.length){
-      terminal.innerHTML += text.charAt(i);
-      i++;
-      setTimeout(type,speed);
-    } else {
-      terminal.innerHTML += "<br>";
-      if(callback) callback();
-      terminal.scrollTop = terminal.scrollHeight;
-    }
-  }
-  type();
+/* SLOW PRINT */
+function slowPrint(text,speed=35,callback=null){
+
+let i=0;
+
+function type(){
+
+if(i<text.length){
+
+terminal.innerHTML+=text.charAt(i);
+i++;
+setTimeout(type,speed);
+
+}
+else{
+
+terminal.innerHTML+="<br>";
+
+if(callback) callback();
+
 }
 
-// -------------------- ALERT --------------------
-function showAlert(message, level="green", flicker=false){
-  const span = document.createElement("span");
-  span.classList.add("alert"); 
-  span.classList.add(level);
-  if(flicker) span.classList.add("flicker");
-  span.innerText = message;
-  terminal.appendChild(span);
-  terminal.innerHTML += "<br>";
-  terminal.scrollTop = terminal.scrollHeight;
 }
 
-// -------------------- COMMANDS --------------------
+type();
+
+}
+
+/* ALERT */
+function showAlert(message,level="green",flicker=false){
+
+const span=document.createElement("span");
+
+span.classList.add("alert");
+span.classList.add(level);
+
+if(flicker) span.classList.add("flicker");
+
+span.innerText=message;
+
+terminal.appendChild(span);
+terminal.innerHTML+="<br>";
+
+}
+
+/* COMMANDS */
 function runCommand(){
-  if(lockdown){ showAlert("Access denied. Terminal in lockdown.","black",true); return; }
-  let cmd = input.value.toLowerCase();
-  input.value = "";
 
-  if(cmd === "help"){
-    const commands = [
-      "help","launch","/hack isd","/classified","/warhead d","/doom",
-      "code green","code orange","code yellow","code red","code black","clear"
-    ];
-    let index = 0;
-    function printNext(){
-      if(index < commands.length){
-        slowPrint(commands[index],35, printNext);
-        index++;
-      } else {
-        showPrompt();
-      }
-    }
-    slowPrint("AVAILABLE COMMANDS:",35, printNext);
-  }
+let cmd=input.value.toLowerCase();
+input.value="";
 
-  else if(cmd === "code green"){
-    showAlert("🟢 CODE GREEN","green",true);
-    showAlert("Normal Operation Status","green");
-    showAlert("All divisions functioning normally.","green");
-  }
+if(cmd==="help"){
 
-  else if(cmd === "clear"){
-    terminal.innerHTML = "";
-    showPrompt();
-  }
+slowPrint("AVAILABLE COMMANDS:",35);
+slowPrint("help");
+slowPrint("code green");
+slowPrint("clear",35,showPrompt);
 
-  else {
-    slowPrint("Unknown command. Type 'help' for a list of commands.", 35, showPrompt);
-  }
 }
 
-// ENTER PRESS
-input.addEventListener("keypress",function(e){ 
-  if(e.key === "Enter") runCommand(); 
-});
-</script>
+else if(cmd==="code green"){
 
+showAlert("CODE GREEN","green",true);
+showAlert("Normal Operation Status","green");
+
+showPrompt();
+
+}
+
+else if(cmd==="clear"){
+
+terminal.innerHTML="";
+showPrompt();
+
+}
+
+else{
+
+slowPrint("Unknown command.",35,showPrompt);
+
+}
+
+}
+
+/* ENTER KEY */
+input.addEventListener("keypress",function(e){
+
+if(e.key==="Enter") runCommand();
+
+});
+
+</script>
 </body>
 </html>
