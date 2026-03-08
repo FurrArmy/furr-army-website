@@ -3,7 +3,7 @@
 <head>
   <title>Furr Army Command Terminal</title>
   <style>
-    body { background:black; color:#00ffaa; font-family:monospace; padding:30px; }
+    body { background:black; color:#00ffaa; font-family:monospace; padding:30px; transition: background 0.1s; }
     #terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
     #cursor { animation: blink 1s infinite; }
     @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
@@ -38,6 +38,7 @@
 const terminal=document.getElementById("terminal");
 const input=document.getElementById("cmd");
 const cursor=document.getElementById("cursor");
+const body=document.body;
 
 const credentials = [
   {username:"Lt.Mike", password:"HMoUF"},
@@ -69,13 +70,13 @@ function login(){
     failedAttempts++;
     alert("Login failed. Invalid credentials.");
     if(failedAttempts>=3){
-      startLockdownCountdown(10);
+      startLockdownCountdown(10,true);
     }
   }
 }
 
-// LOCKDOWN ESCALATION
-function startLockdownCountdown(seconds){
+// LOCKDOWN ESCALATION WITH FLASHING ALERT
+function startLockdownCountdown(seconds, flashScreen=false){
   terminal.style.display="block";
   cursor.style.display="inline";
   showAlert("⚠ SECURITY LOCKDOWN INITIATED","red",true);
@@ -96,6 +97,13 @@ function startLockdownCountdown(seconds){
     "ALERT: UNAUTHORIZED ACCESS!"
   ];
 
+  let flashInterval=null;
+  if(flashScreen){
+    flashInterval=setInterval(()=>{
+      body.style.background = body.style.background === "red" ? "black" : "red";
+    }, 200);
+  }
+
   const countdownInterval=setInterval(()=>{
     countdown--;
     flickerText.innerText=countdown;
@@ -105,6 +113,8 @@ function startLockdownCountdown(seconds){
     }
     if(countdown<=0){
       clearInterval(countdownInterval);
+      if(flashInterval) clearInterval(flashInterval);
+      body.style.background="black";
       lockdown=true;
       showAlert("TERMINAL LOCKDOWN COMPLETE","black",true);
       showAlert("ALL ACCESS DISABLED","black",true);
