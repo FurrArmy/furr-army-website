@@ -9,7 +9,7 @@
     @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
     input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
     button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
-    .flicker { animation: flicker 0.1s infinite alternate; }
+    .flicker { animation: flicker 0.2s infinite alternate; }
     @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
     .alert { font-weight:bold; }
     .green { color:#00ffaa; } .orange { color:#ff9900; } .yellow { color:#ffff00; } .red { color:#ff0000; } .black { color:#555555; }
@@ -53,7 +53,6 @@ function login(){
   if(lockdown) return;
   const user=document.getElementById("username").value;
   const pass=document.getElementById("password").value;
-
   const validUser = credentials.find(u => u.username===user && u.password===pass);
 
   if(validUser){
@@ -70,16 +69,50 @@ function login(){
     failedAttempts++;
     alert("Login failed. Invalid credentials.");
     if(failedAttempts>=3){
-      lockdown=true;
-      document.getElementById("loginBox").style.display="none";
-      showAlert("⚫ SECURITY LOCKDOWN INITIATED","black",true);
-      showAlert("Too many failed login attempts.","black",true);
-      showAlert("All terminal access disabled.","black",true);
-      showAlert("Authorities notified.","black",true);
-      terminal.style.display="block";
-      cursor.style.display="inline";
+      startLockdownCountdown(10);
     }
   }
+}
+
+// LOCKDOWN ESCALATION
+function startLockdownCountdown(seconds){
+  terminal.style.display="block";
+  cursor.style.display="inline";
+  showAlert("⚠ SECURITY LOCKDOWN INITIATED","red",true);
+  showAlert("Too many failed login attempts.","red",true);
+  showAlert("Terminal will be disabled in "+seconds+" seconds.","red",true);
+
+  let countdown=seconds;
+  const flickerText=document.createElement("span");
+  flickerText.classList.add("flicker","red");
+  flickerText.innerText=countdown;
+  terminal.appendChild(flickerText); terminal.innerHTML+="<br>";
+
+  const alertMessages=[
+    "INTRUSION DETECTED!",
+    "FIREWALL BREACH ATTEMPT!",
+    "SECURITY PROTOCOL ENGAGED!",
+    "SYSTEM OVERRIDE INITIATED!",
+    "ALERT: UNAUTHORIZED ACCESS!"
+  ];
+
+  const countdownInterval=setInterval(()=>{
+    countdown--;
+    flickerText.innerText=countdown;
+    terminal.scrollTop=terminal.scrollHeight;
+    if(Math.random()<0.5){
+      showAlert(alertMessages[Math.floor(Math.random()*alertMessages.length)],"red",true);
+    }
+    if(countdown<=0){
+      clearInterval(countdownInterval);
+      lockdown=true;
+      showAlert("TERMINAL LOCKDOWN COMPLETE","black",true);
+      showAlert("ALL ACCESS DISABLED","black",true);
+      showAlert("AUTHORITIES ALERTED","black",true);
+      input.style.display="none";
+      document.getElementById("executeBtn").style.display="none";
+    }
+  },1000);
 }
 
 // PROMPT FUNCTION
@@ -132,34 +165,18 @@ function runCommand(){
 
   else if(cmd==="code orange"){
     showAlert("🟠 CODE ORANGE","orange",true);
-    showAlert("Investigation Status: Something is Wrong","orange");
-    let alerts=["FAIA launching investigation.","FAISD increasing observation.","GSP tactical standby.","MP patrol density increased."];
-    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"orange",Math.random()<0.5),2500);
-    setTimeout(()=>clearInterval(interval),30000);
   }
 
   else if(cmd==="code yellow"){
     showAlert("🟡 CODE YELLOW","yellow",true);
-    showAlert("Elevated Readiness: Prepare to Move","yellow");
-    let alerts=["GSP defensive formation.","6th FATD armor prepositioned.","FAHT rapid deployment standby.","4th AFC aerial patrol increased."];
-    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow",Math.random()<0.5),2000);
-    setTimeout(()=>clearInterval(interval),30000);
   }
 
   else if(cmd==="code red"){
     showAlert("🔴 CODE RED","red",true);
-    showAlert("Active Threat: Engage","red");
-    let alerts=["All divisions mobilizing.","4th AFC securing airspace.","Armor deployed by FATD.","FAHT rapid response.","MP enforcing authority.","FAIA live combat feed active."];
-    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"red",Math.random()<0.7),1500);
-    setTimeout(()=>clearInterval(interval),30000);
   }
 
   else if(cmd==="code black"){
     showAlert("⚫ CODE BLACK","black",true);
-    showAlert("Critical Compromise: Contain or Collapse","black");
-    let alerts=["Base lockdown.","Section isolation protocols.","Evacuation corridors.","SD eligibility triggered.","Warhead review."];
-    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"black",Math.random()<0.8),1200);
-    setTimeout(()=>clearInterval(interval),30000);
   }
 
   else if(cmd==="/warhead d"){
@@ -186,180 +203,6 @@ function runCommand(){
       if(Math.random()<0.3) showAlert("SECURITY ALERT: Intrusion detected!","red",true);
       if(countdown<=0){ clearInterval(countdownInterval); showAlert("COUNTDOWN COMPLETE","red"); showAlert("SYSTEM BREACH FAILED","red"); showAlert("ALL SECURITY PROTOCOLS ENGAGED","red"); }
     },1000);
-  }
-
-  else if(cmd==="clear"){ terminal.innerHTML=""; }
-  else{ slowPrint("Unknown command. Type 'help' for a list of commands."); }
-}
-
-input.addEventListener("keypress",function(e){ if(e.key==="Enter") runCommand(); });
-</script>
-
-</body>
-</html>
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Furr Army Command Terminal</title>
-  <style>
-    body { background:black; color:#00ffaa; font-family:monospace; padding:30px; }
-    #terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
-    #cursor { animation: blink 1s infinite; }
-    @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
-    input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
-    button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
-    .flicker { animation: flicker 0.2s infinite alternate; }
-    @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
-    .alert { font-weight:bold; }
-    .green { color:#00ffaa; } .orange { color:#ff9900; } .yellow { color:#ffff00; } .red { color:#ff0000; } .black { color:#555555; }
-    .progress-bar { display:inline-block; width:100%; border:1px solid #00ffaa; margin-top:5px; }
-    .progress-fill { display:inline-block; height:1em; background:#00ffaa; width:0%; }
-    #loginBox { margin-bottom:20px; }
-  </style>
-</head>
-<body>
-
-<h2>FURR ARMY COMMAND TERMINAL</h2>
-
-<div id="loginBox">
-  Username: <input id="username" placeholder="Enter username"><br><br>
-  Password: <input id="password" type="password" placeholder="Enter password"><br><br>
-  <button onclick="login()">Login</button>
-</div>
-
-<div id="terminal"></div>
-<span id="cursor" style="display:none;">█</span>
-<br><br>
-<input id="cmd" placeholder="Enter command" style="display:none;">
-<button id="executeBtn" onclick="runCommand()" style="display:none;">Execute</button>
-
-<script>
-const terminal=document.getElementById("terminal");
-const input=document.getElementById("cmd");
-const cursor=document.getElementById("cursor");
-
-const credentials = [
-  {username:"Lt.Mike", password:"HMoUF"},
-  {username:"Travis", password:"SCFA"}
-];
-
-let failedAttempts=0;
-let lockdown=false;
-let currentUser="";
-
-// LOGIN FUNCTION
-function login(){
-  if(lockdown) return;
-  const user=document.getElementById("username").value;
-  const pass=document.getElementById("password").value;
-
-  const validUser = credentials.find(u => u.username===user && u.password===pass);
-
-  if(validUser){
-    currentUser = validUser.username;
-    document.getElementById("loginBox").style.display="none";
-    terminal.style.display="block";
-    cursor.style.display="inline";
-    input.style.display="inline";
-    document.getElementById("executeBtn").style.display="inline";
-    showAlert("Login successful. Welcome, "+currentUser+"!","green",true);
-    showPrompt();
-    slowPrint("Type 'help' to see available commands.");
-  } else{
-    failedAttempts++;
-    alert("Login failed. Invalid credentials.");
-    if(failedAttempts>=3){
-      startLockdownCountdown(10);
-    }
-  }
-}
-
-// LOCKDOWN ESCALATION
-function startLockdownCountdown(seconds){
-  terminal.style.display="block";
-  cursor.style.display="inline";
-  showAlert("⚠ SECURITY LOCKDOWN INITIATED","red",true);
-  showAlert("Too many failed login attempts.","red",true);
-  showAlert("Terminal will be disabled in "+seconds+" seconds.","red",true);
-
-  let countdown=seconds;
-  const flickerText=document.createElement("span");
-  flickerText.classList.add("flicker","red");
-  flickerText.innerText=countdown;
-  terminal.appendChild(flickerText); terminal.innerHTML+="<br>";
-
-  const alertMessages=[
-    "INTRUSION DETECTED!",
-    "FIREWALL BREACH ATTEMPT!",
-    "SECURITY PROTOCOL ENGAGED!",
-    "SYSTEM OVERRIDE INITIATED!",
-    "ALERT: UNAUTHORIZED ACCESS!"
-  ];
-
-  const countdownInterval=setInterval(()=>{
-    countdown--;
-    flickerText.innerText=countdown;
-    terminal.scrollTop=terminal.scrollHeight;
-    // random alerts
-    if(Math.random()<0.5){
-      showAlert(alertMessages[Math.floor(Math.random()*alertMessages.length)],"red",true);
-    }
-    if(countdown<=0){
-      clearInterval(countdownInterval);
-      lockdown=true;
-      showAlert("TERMINAL LOCKDOWN COMPLETE","black",true);
-      showAlert("ALL ACCESS DISABLED","black",true);
-      showAlert("AUTHORITIES ALERTED","black",true);
-      input.style.display="none";
-      document.getElementById("executeBtn").style.display="none";
-    }
-  },1000);
-}
-
-// PROMPT FUNCTION
-function showPrompt(){
-  if(lockdown) return;
-  terminal.innerHTML+="["+currentUser+"@FurrArmy]$ ";
-  terminal.scrollTop=terminal.scrollHeight;
-}
-
-// TERMINAL FUNCTIONS
-function slowPrint(text,speed=35,callback=null){
-  let i=0;
-  function type(){
-    if(i<text.length){ terminal.innerHTML+=text.charAt(i); i++; setTimeout(type,speed); }
-    else{ terminal.innerHTML+="<br>"; if(callback) callback(); terminal.scrollTop=terminal.scrollHeight; showPrompt(); }
-  }
-  type();
-}
-
-function showAlert(message,level="green",flicker=false){
-  const span=document.createElement("span");
-  span.classList.add("alert"); span.classList.add(level);
-  if(flicker) span.classList.add("flicker");
-  span.innerText=message;
-  terminal.appendChild(span); terminal.innerHTML+="<br>"; terminal.scrollTop=terminal.scrollHeight;
-}
-
-// COMMANDS (same as previous script)
-function runCommand(){
-  if(lockdown){ showAlert("Access denied. Terminal in lockdown.","black",true); return; }
-
-  let cmd=input.value.toLowerCase(); input.value="";
-
-  if(cmd==="help"){ 
-    slowPrint("AVAILABLE COMMANDS:");
-    slowPrint("help"); slowPrint("launch"); slowPrint("/hack isd"); 
-    slowPrint("/classified"); slowPrint("/warhead d"); slowPrint("/doom"); 
-    slowPrint("code green"); slowPrint("code orange"); slowPrint("code yellow"); slowPrint("code red"); slowPrint("code black"); 
-    slowPrint("clear");
-  }
-
-  else if(cmd==="code green"){
-    showAlert("🟢 CODE GREEN","green",true);
-    showAlert("Normal Operation Status","green");
-    showAlert("All divisions functioning normally.","green");
   }
 
   else if(cmd==="clear"){ terminal.innerHTML=""; }
