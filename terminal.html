@@ -5,15 +5,19 @@
 
 <style>
 body { background:black; color:#00ffaa; font-family:monospace; padding:30px; transition: background 0.1s; }
+
 #terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
+
 #cursor { animation: blink 1s infinite; }
 
 @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
 
 input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
+
 button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
 
 .flicker { animation: flicker 0.2s infinite alternate; }
+
 @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
 
 .alert { font-weight:bold; }
@@ -23,9 +27,6 @@ button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:
 .yellow { color:#ffff00; }
 .red { color:#ff0000; }
 .black { color:#555555; }
-
-.progress-bar { display:inline-block; width:100%; border:1px solid #00ffaa; margin-top:5px; }
-.progress-fill { display:inline-block; height:1em; background:#00ffaa; width:0%; }
 
 #loginBox { margin-bottom:20px; }
 </style>
@@ -106,7 +107,7 @@ failedAttempts++;
 alert("Login failed.");
 
 if(failedAttempts >= 3){
-startLockdownCountdown(10,true);
+startLockdownCountdown(10);
 }
 
 }
@@ -203,16 +204,6 @@ terminal.scrollTop=terminal.scrollHeight;
 },1000);
 
 }
-/* PAGE REFRESH AFTER FAILURE */
-setTimeout(()=>{
-location.reload();
-},4000);
-
-}
-
-},1000);
-
-}
 
 /* PROMPT */
 function showPrompt(){
@@ -271,7 +262,7 @@ input.value="";
 
 if(cmd==="help"){
 
-slowPrint("AVAILABLE COMMANDS:",35);
+slowPrint("AVAILABLE COMMANDS:");
 slowPrint("help");
 slowPrint("code green");
 slowPrint("clear",35,showPrompt);
@@ -282,7 +273,6 @@ else if(cmd==="code green"){
 
 showAlert("CODE GREEN","green",true);
 showAlert("Normal Operation Status","green");
-
 showPrompt();
 
 }
@@ -308,5 +298,6 @@ if(e.key==="Enter") runCommand();
 });
 
 </script>
+
 </body>
 </html>
