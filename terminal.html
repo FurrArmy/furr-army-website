@@ -2,11 +2,14 @@
 <html>
 <head>
 <title>Furr Army Command Terminal</title>
+
 <style>
 body { background:black; color:#00ffaa; font-family:monospace; padding:30px; transition: background 0.1s; }
 #terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
 #cursor { animation: blink 1s infinite; }
+
 @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
+
 input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
 button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
 
@@ -14,6 +17,7 @@ button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:
 @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
 
 .alert { font-weight:bold; }
+
 .green { color:#00ffaa; }
 .orange { color:#ff9900; }
 .yellow { color:#ffff00; }
@@ -39,9 +43,10 @@ Password: <input id="password" type="password"><br><br>
 
 <div id="terminal"></div>
 <span id="cursor" style="display:none;">█</span>
+
 <br><br>
 
-<input id="cmd" style="display:none;">
+<input id="cmd" placeholder="Enter command" style="display:none;">
 <button id="executeBtn" onclick="runCommand()" style="display:none;">Execute</button>
 
 <script>
@@ -49,7 +54,6 @@ Password: <input id="password" type="password"><br><br>
 const terminal = document.getElementById("terminal");
 const input = document.getElementById("cmd");
 const cursor = document.getElementById("cursor");
-const body = document.body;
 
 /* USERS */
 const credentials = [
@@ -84,29 +88,25 @@ document.getElementById("executeBtn").style.display = "inline";
 
 showAlert("Login successful. Welcome, "+currentUser+"!","green",true);
 
-/* SECRET ACCOUNT TRIGGER */
+/* SECRET ACCOUNT */
 if(currentUser === "H.K"){
 
 slowPrint("WARNING: RESTRICTED ROOT ACCOUNT DETECTED...",35);
 slowPrint("AUTOMATIC SYSTEM DIAGNOSTIC STARTING...",35,startSecretCheck);
 
-}
-else{
+}else{
 
 slowPrint("Type 'help' to see available commands.",35,showPrompt);
 
 }
 
-}
-else{
+}else{
 
 failedAttempts++;
 alert("Login failed.");
 
 if(failedAttempts >= 3){
-
 startLockdownCountdown(10,true);
-
 }
 
 }
@@ -114,7 +114,7 @@ startLockdownCountdown(10,true);
 }
 
 /* LOCKDOWN */
-function startLockdownCountdown(seconds,flashScreen=false){
+function startLockdownCountdown(seconds){
 
 terminal.style.display="block";
 cursor.style.display="inline";
@@ -184,9 +184,7 @@ progress+=100/120;
 fill.style.width=progress+"%";
 
 if(Math.random()<0.35){
-
 showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow");
-
 }
 
 if(progress>=100){
@@ -197,7 +195,10 @@ showAlert("SYSTEM CHECK FAILED","red",true);
 showAlert("ERROR: UNAUTHORIZED ROOT ACCOUNT","red");
 showAlert("SECURITY TRACE INITIATED","red");
 
-showPrompt();
+/* PAGE REFRESH AFTER FAILURE */
+setTimeout(()=>{
+location.reload();
+},4000);
 
 }
 
@@ -207,12 +208,9 @@ showPrompt();
 
 /* PROMPT */
 function showPrompt(){
-
 if(lockdown) return;
-
 terminal.innerHTML+="["+currentUser+"@FurrArmy]$ ";
 terminal.scrollTop=terminal.scrollHeight;
-
 }
 
 /* SLOW PRINT */
@@ -223,18 +221,13 @@ let i=0;
 function type(){
 
 if(i<text.length){
-
 terminal.innerHTML+=text.charAt(i);
 i++;
 setTimeout(type,speed);
-
 }
 else{
-
 terminal.innerHTML+="<br>";
-
 if(callback) callback();
-
 }
 
 }
@@ -262,6 +255,8 @@ terminal.innerHTML+="<br>";
 
 /* COMMANDS */
 function runCommand(){
+
+if(lockdown) return;
 
 let cmd=input.value.toLowerCase();
 input.value="";
@@ -301,9 +296,7 @@ slowPrint("Unknown command.",35,showPrompt);
 
 /* ENTER KEY */
 input.addEventListener("keypress",function(e){
-
 if(e.key==="Enter") runCommand();
-
 });
 
 </script>
