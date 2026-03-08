@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Command Terminal</title>
+
+<style>
+
+body{
+background:black;
+color:#00ffaa;
+font-family:monospace;
+padding:30px;
+}
+
+#terminal{
+white-space:pre-line;
+}
+
+#cursor{
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:1;}
+50%{opacity:0;}
+100%{opacity:1;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>FURR ARMY COMMAND TERMINAL</h2>
+
+<div id="terminal"></div><span id="cursor">█</span>
+
+<script>
+
+var text = `
+Initializing Command Network...
+Connecting to Military Database...
+Loading Archive System...
+
+Access Level: PUBLIC
+Welcome Operator.
+
+Type "help" for commands.
+`;
+
+var i = 0;
+
+function slowPrint(){
+
+if(i < text.length){
+
+document.getElementById("terminal").innerHTML += text.charAt(i);
+
+i++;
+
+setTimeout(slowPrint,35);
+
+}
+
+}
+
+slowPrint();
+
+</script>
+
+</body>
+
+</html>
