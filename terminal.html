@@ -39,11 +39,12 @@ const terminal=document.getElementById("terminal");
 const input=document.getElementById("cmd");
 const cursor=document.getElementById("cursor");
 
-// Login credentials (example)
-const credentials = { username: "furradmin", password: "secure123" };
+const credentials={username:"Lt.Mike", password:"HMoUF"};
+let failedAttempts=0;
+let lockdown=false;
 
-// Login function
 function login(){
+  if(lockdown) return;
   const user=document.getElementById("username").value;
   const pass=document.getElementById("password").value;
 
@@ -55,12 +56,23 @@ function login(){
     document.getElementById("executeBtn").style.display="inline";
     showAlert("Login successful. Welcome, "+user+"!","green",true);
     slowPrint("Type 'help' to see available commands.");
-  }else{
+  } else{
+    failedAttempts++;
     alert("Login failed. Invalid credentials.");
+    if(failedAttempts>=3){
+      lockdown=true;
+      document.getElementById("loginBox").style.display="none";
+      showAlert("⚫ SECURITY LOCKDOWN INITIATED","black",true);
+      showAlert("Too many failed login attempts.","black",true);
+      showAlert("All terminal access disabled.","black",true);
+      showAlert("Authorities notified.","black",true);
+      // Show terminal and cursor for alerts
+      terminal.style.display="block";
+      cursor.style.display="inline";
+    }
   }
 }
 
-// Terminal functions
 function slowPrint(text,speed=35,callback=null){
   let i=0;
   function type(){
@@ -78,16 +90,15 @@ function showAlert(message,level="green",flicker=false){
   terminal.appendChild(span); terminal.innerHTML+="<br>"; terminal.scrollTop=terminal.scrollHeight;
 }
 
-// Commands (full system: Green, Orange, Yellow, Red, Black, /doom, /warhead d)
 function runCommand(){
-  let cmd=input.value.toLowerCase();
-  input.value="";
+  if(lockdown){ showAlert("Access denied. Terminal in lockdown.","black",true); return; }
 
-  if(cmd==="help"){
-    slowPrint("AVAILABLE COMMANDS:");
-    slowPrint("help"); slowPrint("launch"); slowPrint("/hack isd"); slowPrint("/classified");
-    slowPrint("/warhead d"); slowPrint("/doom");
-    slowPrint("code green"); slowPrint("code orange"); slowPrint("code yellow"); slowPrint("code red"); slowPrint("code black");
+  let cmd=input.value.toLowerCase(); input.value="";
+
+  if(cmd==="help"){ 
+    slowPrint("AVAILABLE COMMANDS:"); slowPrint("help"); slowPrint("launch"); slowPrint("/hack isd"); 
+    slowPrint("/classified"); slowPrint("/warhead d"); slowPrint("/doom"); 
+    slowPrint("code green"); slowPrint("code orange"); slowPrint("code yellow"); slowPrint("code red"); slowPrint("code black"); 
     slowPrint("clear");
   }
 
