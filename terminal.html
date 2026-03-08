@@ -4,183 +4,157 @@
   <title>Furr Army Command Terminal</title>
   <style>
     body { background:black; color:#00ffaa; font-family:monospace; padding:30px; }
-    #terminal { white-space: pre-line; max-height: 500px; overflow-y:auto; }
+    #terminal { white-space: pre-line; max-height:500px; overflow-y:auto; display:none; }
     #cursor { animation: blink 1s infinite; }
-    @keyframes blink { 0% {opacity:1;} 50% {opacity:0;} 100% {opacity:1;} }
+    @keyframes blink { 0%{opacity:1;} 50%{opacity:0;} 100%{opacity:1;} }
     input { background:black; color:#00ffaa; border:1px solid #00ffaa; font-family:monospace; padding:5px; }
     button { background:#00ffaa; color:black; border:none; padding:5px 10px; cursor:pointer; }
     .flicker { animation: flicker 0.1s infinite alternate; }
     @keyframes flicker { 0%{opacity:1;} 50%{opacity:0.2;} 100%{opacity:1;} }
     .alert { font-weight:bold; }
-    .green { color:#00ffaa; }
-    .orange { color:#ff9900; }
-    .yellow { color:#ffff00; }
-    .red { color:#ff0000; }
-    .black { color:#555555; }
+    .green { color:#00ffaa; } .orange { color:#ff9900; } .yellow { color:#ffff00; } .red { color:#ff0000; } .black { color:#555555; }
     .progress-bar { display:inline-block; width:100%; border:1px solid #00ffaa; margin-top:5px; }
     .progress-fill { display:inline-block; height:1em; background:#00ffaa; width:0%; }
+    #loginBox { margin-bottom:20px; }
   </style>
 </head>
 <body>
 
 <h2>FURR ARMY COMMAND TERMINAL</h2>
+
+<div id="loginBox">
+  Username: <input id="username" placeholder="Enter username"><br><br>
+  Password: <input id="password" type="password" placeholder="Enter password"><br><br>
+  <button onclick="login()">Login</button>
+</div>
+
 <div id="terminal"></div>
-<span id="cursor">█</span>
+<span id="cursor" style="display:none;">█</span>
 <br><br>
-<input id="cmd" placeholder="Enter command">
-<button onclick="runCommand()">Execute</button>
+<input id="cmd" placeholder="Enter command" style="display:none;">
+<button id="executeBtn" onclick="runCommand()" style="display:none;">Execute</button>
 
 <script>
-const terminal = document.getElementById("terminal");
-const input = document.getElementById("cmd");
+const terminal=document.getElementById("terminal");
+const input=document.getElementById("cmd");
+const cursor=document.getElementById("cursor");
 
+// Login credentials (example)
+const credentials = { username: "furradmin", password: "secure123" };
+
+// Login function
+function login(){
+  const user=document.getElementById("username").value;
+  const pass=document.getElementById("password").value;
+
+  if(user===credentials.username && pass===credentials.password){
+    document.getElementById("loginBox").style.display="none";
+    terminal.style.display="block";
+    cursor.style.display="inline";
+    input.style.display="inline";
+    document.getElementById("executeBtn").style.display="inline";
+    showAlert("Login successful. Welcome, "+user+"!","green",true);
+    slowPrint("Type 'help' to see available commands.");
+  }else{
+    alert("Login failed. Invalid credentials.");
+  }
+}
+
+// Terminal functions
 function slowPrint(text,speed=35,callback=null){
   let i=0;
   function type(){
-    if(i<text.length){
-      terminal.innerHTML+=text.charAt(i);
-      i++;
-      setTimeout(type,speed);
-    }else{
-      terminal.innerHTML+="<br>";
-      if(callback) callback();
-      terminal.scrollTop=terminal.scrollHeight;
-    }
+    if(i<text.length){ terminal.innerHTML+=text.charAt(i); i++; setTimeout(type,speed); }
+    else{ terminal.innerHTML+="<br>"; if(callback) callback(); terminal.scrollTop=terminal.scrollHeight; }
   }
   type();
 }
 
 function showAlert(message,level="green",flicker=false){
   const span=document.createElement("span");
-  span.classList.add("alert");
-  span.classList.add(level);
+  span.classList.add("alert"); span.classList.add(level);
   if(flicker) span.classList.add("flicker");
   span.innerText=message;
-  terminal.appendChild(span);
-  terminal.innerHTML+="<br>";
-  terminal.scrollTop=terminal.scrollHeight;
+  terminal.appendChild(span); terminal.innerHTML+="<br>"; terminal.scrollTop=terminal.scrollHeight;
 }
 
+// Commands (full system: Green, Orange, Yellow, Red, Black, /doom, /warhead d)
 function runCommand(){
   let cmd=input.value.toLowerCase();
   input.value="";
 
   if(cmd==="help"){
     slowPrint("AVAILABLE COMMANDS:");
-    slowPrint("help");
-    slowPrint("launch");
-    slowPrint("/hack isd");
-    slowPrint("/classified");
-    slowPrint("/warhead d");
-    slowPrint("/doom");
-    slowPrint("code green");
-    slowPrint("code orange");
-    slowPrint("code yellow");
-    slowPrint("code red");
-    slowPrint("code black");
+    slowPrint("help"); slowPrint("launch"); slowPrint("/hack isd"); slowPrint("/classified");
+    slowPrint("/warhead d"); slowPrint("/doom");
+    slowPrint("code green"); slowPrint("code orange"); slowPrint("code yellow"); slowPrint("code red"); slowPrint("code black");
     slowPrint("clear");
   }
 
-  // CODE GREEN
   else if(cmd==="code green"){
     showAlert("🟢 CODE GREEN","green",true);
     showAlert("Normal Operation Status","green");
-    showAlert("Full operational stability. No active threat.","green");
-
-    let alerts=["GSP standard patrols.","6th FATD maintenance rotation.","FAIA monitoring external networks.","FAISD flagging no irregularities.","Warhead containment stable."];
-    let interval=setInterval(()=>{
-      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"green",Math.random()<0.3);
-    },3000);
+    showAlert("All divisions functioning normally.","green");
+    let alerts=["GSP standard patrols.","6th FATD maintenance rotation.","FAIA monitoring.","FAISD flagging no irregularities."];
+    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"green",Math.random()<0.3),3000);
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE ORANGE
   else if(cmd==="code orange"){
     showAlert("🟠 CODE ORANGE","orange",true);
     showAlert("Investigation Status: Something is Wrong","orange");
-    let alerts=["FAIA launching investigation.","FAISD increasing internal observation.","GSP on tactical standby.","MP patrol density increased."];
-    let interval=setInterval(()=>{
-      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"orange",Math.random()<0.5);
-    },2500);
+    let alerts=["FAIA launching investigation.","FAISD increasing observation.","GSP tactical standby.","MP patrol density increased."];
+    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"orange",Math.random()<0.5),2500);
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE YELLOW
   else if(cmd==="code yellow"){
     showAlert("🟡 CODE YELLOW","yellow",true);
     showAlert("Elevated Readiness: Prepare to Move","yellow");
-    let alerts=["GSP defensive formation preparing.","6th FATD pre-positioned armor.","12th FAHT on rapid deployment standby.","4th AFC aerial patrol increased."];
-    let interval=setInterval(()=>{
-      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow",Math.random()<0.5);
-    },2000);
+    let alerts=["GSP defensive formation.","6th FATD armor prepositioned.","FAHT rapid deployment standby.","4th AFC aerial patrol increased."];
+    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow",Math.random()<0.5),2000);
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE RED
   else if(cmd==="code red"){
     showAlert("🔴 CODE RED","red",true);
     showAlert("Active Threat: Engage","red");
-    let alerts=["All divisions mobilizing.","4th AFC securing airspace.","Armor deployed by FATD.","FAHT executing rapid response.","MP enforcing emergency authority.","FAISD monitoring for betrayal.","FAIA live combat feed active."];
-    let interval=setInterval(()=>{
-      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"red",Math.random()<0.7);
-    },1500);
+    let alerts=["All divisions mobilizing.","4th AFC securing airspace.","Armor deployed by FATD.","FAHT rapid response.","MP enforcing authority.","FAIA live combat feed active."];
+    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"red",Math.random()<0.7),1500);
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // CODE BLACK
   else if(cmd==="code black"){
     showAlert("⚫ CODE BLACK","black",true);
     showAlert("Critical Compromise: Contain or Collapse","black");
-    let alerts=["Base full lockdown.","Section isolation protocols active.","Evacuation corridors prepared.","SD eligibility triggered.","Warhead authorization review."];
-    let interval=setInterval(()=>{
-      showAlert(alerts[Math.floor(Math.random()*alerts.length)],"black",Math.random()<0.8);
-    },1200);
+    let alerts=["Base lockdown.","Section isolation protocols.","Evacuation corridors.","SD eligibility triggered.","Warhead review."];
+    let interval=setInterval(()=>showAlert(alerts[Math.floor(Math.random()*alerts.length)],"black",Math.random()<0.8),1200);
     setTimeout(()=>clearInterval(interval),30000);
   }
 
-  // /warhead D
   else if(cmd==="/warhead d"){
     showAlert("COMMAND RECEIVED: /warhead D","red");
     showAlert("Initializing Warhead Hack Simulation (90s)...","red");
     terminal.innerHTML+='<div class="progress-bar"><div class="progress-fill" id="warhead-bar"></div></div><br>';
-    const bar=document.getElementById("warhead-bar");
-    let progress=0;
+    const bar=document.getElementById("warhead-bar"); let progress=0;
     const intervalTime=90*1000/100;
     const hackInterval=setInterval(()=>{
-      progress++;
-      bar.style.width=progress+"%";
-      terminal.scrollTop=terminal.scrollHeight;
-      if(progress>=100){
-        clearInterval(hackInterval);
-        showAlert("WARHEAD HACK FAILED","red",true);
-        showAlert("SECURITY PROTOCOL ENGAGED","red",true);
-      }
+      progress++; bar.style.width=progress+"%"; terminal.scrollTop=terminal.scrollHeight;
+      if(progress>=100){ clearInterval(hackInterval); showAlert("WARHEAD HACK FAILED","red",true); showAlert("SECURITY PROTOCOL ENGAGED","red",true); }
     },intervalTime);
   }
 
-  // /doom
   else if(cmd==="/doom"){
     showAlert("SECRET COMMAND INITIATED: /doom","orange");
     showAlert("Initializing Countdown...","orange");
     let countdown=10;
     const flickerText=document.createElement("span");
-    flickerText.classList.add("flicker");
-    flickerText.innerText=countdown;
-    terminal.appendChild(flickerText);
-    terminal.innerHTML+="<br>";
+    flickerText.classList.add("flicker"); flickerText.innerText=countdown;
+    terminal.appendChild(flickerText); terminal.innerHTML+="<br>";
     const countdownInterval=setInterval(()=>{
-      countdown--;
-      flickerText.innerText=countdown;
-      terminal.scrollTop=terminal.scrollHeight;
-      if(Math.random()<0.3){
-        showAlert("SECURITY ALERT: Intrusion detected!","red",true);
-      }
-      if(countdown<=0){
-        clearInterval(countdownInterval);
-        showAlert("COUNTDOWN COMPLETE","red");
-        showAlert("SYSTEM BREACH FAILED","red");
-        showAlert("ALL SECURITY PROTOCOLS ENGAGED","red");
-      }
+      countdown--; flickerText.innerText=countdown; terminal.scrollTop=terminal.scrollHeight;
+      if(Math.random()<0.3) showAlert("SECURITY ALERT: Intrusion detected!","red",true);
+      if(countdown<=0){ clearInterval(countdownInterval); showAlert("COUNTDOWN COMPLETE","red"); showAlert("SYSTEM BREACH FAILED","red"); showAlert("ALL SECURITY PROTOCOLS ENGAGED","red"); }
     },1000);
   }
 
@@ -188,8 +162,7 @@ function runCommand(){
   else{ slowPrint("Unknown command. Type 'help' for a list of commands."); }
 }
 
-// Press Enter to execute
-input.addEventListener("keypress",function(e){if(e.key==="Enter") runCommand();});
+input.addEventListener("keypress",function(e){ if(e.key==="Enter") runCommand(); });
 </script>
 
 </body>
