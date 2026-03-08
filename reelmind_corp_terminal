@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reelmind Corp Terminal</title>
+<style>
+/* -------------------- BODY -------------------- */
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg,#1b2735,#090a0f);
+  font-family: 'Consolas','Courier New',monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #00ffaa;
+}
+
+/* -------------------- TERMINAL WINDOW -------------------- */
+#terminalWindow {
+  width: 800px;
+  max-width: 95%;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #00ffaa;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 20px #00ffaa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* -------------------- HEADER -------------------- */
+#terminalHeader {
+  background: rgba(0,255,170,0.1);
+  padding: 10px;
+  border-bottom: 1px solid #00ffaa;
+  border-radius: 6px 6px 0 0;
+  font-weight: bold;
+  color: #00ffaa;
+}
+
+/* -------------------- TERMINAL CONTENT -------------------- */
+#terminal {
+  background: rgba(0,0,0,0.5);
+  flex: 1;
+  padding: 10px;
+  margin-top: 10px;
+  overflow-y: auto;
+  white-space: pre-line;
+  border-radius: 5px;
+}
+
+/* -------------------- INPUT -------------------- */
+#cmd {
+  margin-top: 10px;
+  background: rgba(0,0,0,0.7);
+  border: 1px solid #00ffaa;
+  color: #00ffaa;
+  padding: 8px;
+  border-radius: 5px;
+  font-family: monospace;
+  width: 100%;
+}
+
+#executeBtn {
+  margin-top: 10px;
+  background: #00ffaa;
+  color: black;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* -------------------- ALERTS -------------------- */
+.alert {
+  font-weight: bold;
+}
+
+.green { color:#00ffaa; }
+.orange { color:#ff9900; }
+.yellow { color:#ffff00; }
+.red { color:#ff0000; }
+.black { color:#555555; }
+
+/* -------------------- CURSOR -------------------- */
+#cursor {
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+/* -------------------- PROGRESS BAR -------------------- */
+.progress-bar {
+  display:inline-block;
+  width:100%;
+  border:1px solid #00ffaa;
+  margin-top:5px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.progress-fill {
+  display:inline-block;
+  height:1em;
+  background:#00ffaa;
+  width:0%;
+}
+</style>
+</head>
+
+<body>
+<div id="terminalWindow">
+  <div id="terminalHeader">REELMIND CORP TERMINAL</div>
+  
+  <div id="loginBox">
+    Username: <input id="username" placeholder="Enter username"><br><br>
+    Password: <input id="password" type="password" placeholder="Enter password"><br><br>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="terminal" style="display:none;"></div>
+  <span id="cursor" style="display:none;">█</span>
+  <input id="cmd" placeholder="Enter command" style="display:none;">
+  <button id="executeBtn" onclick="runCommand()" style="display:none;">Execute</button>
+</div>
+
+<script>
+// -------------------- VARIABLES --------------------
+const terminal = document.getElementById("terminal");
+const input = document.getElementById("cmd");
+const cursor = document.getElementById("cursor");
+
+const credentials = [
+  {username:"Admin", password:"admin123"},
+  {username:"H.K", password:"12345"} // secret
+];
+
+let failedAttempts = 0;
+let lockdown = false;
+let currentUser = "";
+
+// -------------------- LOGIN --------------------
+function login(){
+  if(lockdown) return;
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  const validUser = credentials.find(u => u.username === user && u.password === pass);
+
+  if(validUser){
+    currentUser = validUser.username;
+    document.getElementById("loginBox").style.display="none";
+    terminal.style.display="block";
+    cursor.style.display="inline";
+    input.style.display="inline";
+    document.getElementById("executeBtn").style.display="inline";
+    showAlert(`Login successful. Welcome, ${currentUser}!`,"green",true);
+
+    if(currentUser === "H.K"){
+      slowPrint("RESTRICTED ROOT ACCOUNT DETECTED...",30);
+      slowPrint("RUNNING SECURITY DIAGNOSTIC...",30,startSecretCheck);
+    } else {
+      slowPrint("Type 'help' to see available commands.",30,showPrompt);
+    }
+  } else {
+    failedAttempts++;
+    alert("Login failed.");
+    if(failedAttempts >= 3) startLockdownCountdown(10,true);
+  }
+}
+
+// -------------------- LOCKDOWN --------------------
+function startLockdownCountdown(seconds){
+  terminal.style.display="block";
+  cursor.style.display="inline";
+  showAlert("SECURITY LOCKDOWN INITIATED","red",true);
+  let countdown = seconds;
+  const flickerText = document.createElement("span");
+  flickerText.classList.add("flicker","red");
+  flickerText.innerText = countdown;
+  terminal.appendChild(flickerText);
+  terminal.innerHTML+="<br>";
+
+  const interval = setInterval(()=>{
+    countdown--;
+    flickerText.innerText = countdown;
+    if(countdown <= 0){
+      clearInterval(interval);
+      lockdown = true;
+      showAlert("TERMINAL LOCKDOWN COMPLETE","black",true);
+      input.style.display="none";
+      document.getElementById("executeBtn").style.display="none";
+    }
+  },1000);
+}
+
+// -------------------- SECRET CHECK --------------------
+function startSecretCheck(){
+  showAlert("SYSTEM CHECK INITIALIZED","yellow",true);
+  const barLine = document.createElement("div");
+  terminal.appendChild(barLine);
+
+  let progress = 0;
+  const totalBlocks = 30;
+  const alerts = [
+    "CHECKING CORE MODULE...",
+    "SCANNING NETWORK...",
+    "VERIFYING WARHEAD...",
+    "CONTACTING CENTRAL COMMAND...",
+    "ANALYZING DATA..."
+  ];
+
+  const interval = setInterval(()=>{
+    progress++;
+    let filled = Math.floor((progress/120)*totalBlocks);
+    let empty = totalBlocks - filled;
+    barLine.textContent = "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
+
+    if(Math.random() < 0.35) showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow");
+
+    if(progress >= 120){
+      clearInterval(interval);
+      showAlert("SYSTEM CHECK FAILED","red",true);
+      showAlert("UNAUTHORIZED ROOT ACCOUNT","red");
+      showAlert("SECURITY TRACE INITIATED","red");
+      setTimeout(()=> location.reload(),4000);
+    }
+    terminal.scrollTop = terminal.scrollHeight;
+  },1000);
+}
+
+// -------------------- PROMPT --------------------
+function showPrompt(){
+  if(lockdown) return;
+  terminal.innerHTML += `[${currentUser}@ReelmindCorp]$ `;
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// -------------------- PRINT & ALERT --------------------
+function slowPrint(text,speed=35,callback=null){
+  let i=0;
+  function type(){
+    if(i<text.length){
+      terminal.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(type,speed);
+    } else {
+      terminal.innerHTML+="<br>";
+      if(callback) callback();
+    }
+  }
+  type();
+}
+
+function showAlert(message,level="green",flicker=false){
+  const span = document.createElement("span");
+  span.classList.add("alert");
+  span.classList.add(level);
+  if(flicker) span.classList.add("flicker");
+  span.innerText = message;
+  terminal.appendChild(span);
+  terminal.innerHTML += "<br>";
+}
+
+// -------------------- COMMANDS --------------------
+function runCommand(){
+  if(lockdown) return;
+  let cmd = input.value.toLowerCase();
+  input.value="";
+
+  if(cmd === "help"){
+    slowPrint("AVAILABLE COMMANDS:",35);
+    slowPrint("help");
+    slowPrint("code green");
+    slowPrint("/doom");
+    slowPrint("clear",35,showPrompt);
+  } else if(cmd === "code green"){
+    showAlert("CODE GREEN","green",true);
+    showAlert("Normal operation active","green");
+    showPrompt();
+  } else if(cmd === "/doom"){
+    showAlert("SYSTEM ALERT: /DOOM INITIATED","red",true);
+    slowPrint("Countdown started...",30);
+    showPrompt();
+  } else if(cmd==="clear"){
+    terminal.innerHTML="";
+    showPrompt();
+  } else {
+    slowPrint("Unknown command.",35,showPrompt);
+  }
+}
+
+// -------------------- ENTER KEY --------------------
+input.addEventListener("keypress",function(e){
+  if(e.key==="Enter") runCommand();
+});
+</script>
+</body>
+</html>
