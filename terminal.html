@@ -55,6 +55,20 @@
       background: #00ffaa;
       width: 0%;
     }
+
+    .flicker {
+      animation: flicker 0.1s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0% {opacity:1;}
+      50% {opacity:0.2;}
+      100% {opacity:1;}
+    }
+
+    .alert {
+      color: red;
+    }
   </style>
 </head>
 
@@ -92,7 +106,7 @@ function slowPrint(text, speed = 35, callback = null){
 
 function runCommand() {
   let cmd = input.value.toLowerCase();
-  input.value = ""; // clear input after command
+  input.value = "";
 
   if(cmd === "help"){
     slowPrint("AVAILABLE COMMANDS:");
@@ -101,6 +115,7 @@ function runCommand() {
     slowPrint("/hack isd");
     slowPrint("/classified");
     slowPrint("/warhead d");
+    slowPrint("/doom (secret)");
     slowPrint("clear");
   }
   else if(cmd === "launch"){
@@ -155,11 +170,10 @@ function runCommand() {
     slowPrint("COMMAND RECEIVED: /warhead D");
     slowPrint("Initializing Warhead Hack Simulation (90s)...");
 
-    // create progress bar
     terminal.innerHTML += '<div class="progress-bar"><div class="progress-fill" id="warhead-bar"></div></div><br>';
     const bar = document.getElementById("warhead-bar");
     let progress = 0;
-    const intervalTime = 90 * 1000 / 100; // 90 seconds for 100 steps
+    const intervalTime = 90 * 1000 / 100;
 
     const hackInterval = setInterval(() => {
       progress++;
@@ -173,6 +187,40 @@ function runCommand() {
       }
     }, intervalTime);
   }
+  // ✅ Secret dramatic hack command
+  else if(cmd === "/doom"){
+    slowPrint("SECRET COMMAND INITIATED: /doom");
+    slowPrint("Initializing Countdown...");
+
+    let countdown = 10;
+    const flickerText = document.createElement("span");
+    flickerText.classList.add("flicker");
+    flickerText.innerText = countdown;
+    terminal.appendChild(flickerText);
+    terminal.innerHTML += "<br>";
+
+    const countdownInterval = setInterval(() => {
+      countdown--;
+      flickerText.innerText = countdown;
+      terminal.scrollTop = terminal.scrollHeight;
+
+      // Random security alert
+      if(Math.random() < 0.3) {
+        const alert = document.createElement("span");
+        alert.classList.add("alert");
+        alert.innerText = "SECURITY ALERT: Intrusion detected!";
+        terminal.appendChild(alert);
+        terminal.innerHTML += "<br>";
+      }
+
+      if(countdown <= 0){
+        clearInterval(countdownInterval);
+        slowPrint("COUNTDOWN COMPLETE");
+        slowPrint("SYSTEM BREACHED FAILED");
+        slowPrint("ALL SECURITY PROTOCOLS ENGAGED");
+      }
+    }, 1000);
+  }
   else if(cmd === "clear"){
     terminal.innerHTML = "";
   }
@@ -181,7 +229,7 @@ function runCommand() {
   }
 }
 
-// Optional: allow pressing Enter to run command
+// Enter key executes command
 input.addEventListener("keypress", function(e){
   if(e.key === "Enter") runCommand();
 });
