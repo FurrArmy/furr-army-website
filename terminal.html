@@ -35,41 +35,83 @@ animation:blink 1s infinite;
 
 <h2>FURR ARMY COMMAND TERMINAL</h2>
 
-<div id="terminal"></div><span id="cursor">█</span>
+<div id="terminal"></div>
+<span id="cursor">█</span>
+
+<br><br>
+
+<input id="cmd" placeholder="Enter command">
+<button onclick="runCommand()">Execute</button>
 
 <script>
 
-var text = `
-Initializing Command Network...
-Connecting to Military Database...
-Loading Archive System...
+const terminal = document.getElementById("terminal");
 
-Access Level: PUBLIC
-Welcome Operator.
+function slowPrint(text, speed = 35){
+let i = 0;
 
-Type "help" for commands.
-`;
-
-var i = 0;
-
-function slowPrint(){
-
+function type(){
 if(i < text.length){
-
-document.getElementById("terminal").innerHTML += text.charAt(i);
-
+terminal.innerHTML += text.charAt(i);
 i++;
+setTimeout(type,speed);
+}else{
+terminal.innerHTML += "<br>";
+}
+}
 
-setTimeout(slowPrint,35);
+type();
+}
+
+function runCommand(){
+
+let cmd = document.getElementById("cmd").value.toLowerCase();
+
+if(cmd === "launch"){
+
+terminal.innerHTML += "<br>";
+
+slowPrint("COMMAND ACCEPTED");
+slowPrint("Loading Warhead Control System...");
+slowPrint("Accessing Secure Network...");
+slowPrint("Decrypting Launch Authorization...");
+
+setTimeout(()=>slowPrint("AUTHORIZATION GRANTED"),3000);
+
+setTimeout(()=>slowPrint("Opening Launch Silo..."),5000);
+
+setTimeout(()=>slowPrint("Fuel Systems Online..."),7000);
+
+setTimeout(()=>slowPrint("Target Coordinates Locked"),9000);
+
+setTimeout(()=>slowPrint("Beginning Countdown"),11000);
+
+setTimeout(()=>slowPrint("5"),13000);
+setTimeout(()=>slowPrint("4"),14000);
+setTimeout(()=>slowPrint("3"),15000);
+setTimeout(()=>slowPrint("2"),16000);
+setTimeout(()=>slowPrint("1"),17000);
+
+setTimeout(()=>slowPrint("WARHEAD LAUNCH SIMULATION COMPLETE"),18500);
 
 }
 
+if(cmd === "help"){
+
+slowPrint("AVAILABLE COMMANDS:");
+slowPrint("help");
+slowPrint("launch");
+slowPrint("clear");
+
 }
 
-slowPrint();
+if(cmd === "clear"){
+terminal.innerHTML = "";
+}
+
+}
 
 </script>
 
 </body>
-
 </html>
