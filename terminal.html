@@ -157,18 +157,11 @@ function startSecretCheck(){
 
 showAlert("SYSTEM CHECK INITIALIZED","yellow",true);
 
-const bar=document.createElement("div");
-bar.classList.add("progress-bar");
-
-const fill=document.createElement("div");
-fill.classList.add("progress-fill");
-
-bar.appendChild(fill);
-
-terminal.appendChild(bar);
-terminal.innerHTML+="<br>";
+const barLine=document.createElement("div");
+terminal.appendChild(barLine);
 
 let progress=0;
+const totalBlocks=30;
 
 const alerts=[
 "CHECKING REACTOR CORE...",
@@ -180,14 +173,18 @@ const alerts=[
 
 const interval=setInterval(()=>{
 
-progress+=100/120;
-fill.style.width=progress+"%";
+progress++;
+
+let filled=Math.floor((progress/120)*totalBlocks);
+let empty=totalBlocks-filled;
+
+barLine.textContent="["+ "█".repeat(filled) + "░".repeat(empty) + "]";
 
 if(Math.random()<0.35){
 showAlert(alerts[Math.floor(Math.random()*alerts.length)],"yellow");
 }
 
-if(progress>=100){
+if(progress>=120){
 
 clearInterval(interval);
 
@@ -195,6 +192,17 @@ showAlert("SYSTEM CHECK FAILED","red",true);
 showAlert("ERROR: UNAUTHORIZED ROOT ACCOUNT","red");
 showAlert("SECURITY TRACE INITIATED","red");
 
+setTimeout(()=>{
+location.reload();
+},4000);
+
+}
+
+terminal.scrollTop=terminal.scrollHeight;
+
+},1000);
+
+}
 /* PAGE REFRESH AFTER FAILURE */
 setTimeout(()=>{
 location.reload();
