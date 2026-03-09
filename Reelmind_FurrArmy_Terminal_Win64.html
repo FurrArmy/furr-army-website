@@ -12,7 +12,7 @@ body{background:#0b0f1a;color:#00ff9c;font-family:Consolas,monospace;padding:30p
 input{background:black;border:none;color:#00ff9c;font-family:Consolas,monospace;font-size:14px;width:80%;outline:none}
 #loginBox{background:black;padding:20px;border-top:1px solid #1e2a44}
 button{background:#00ff9c;border:none;padding:5px 12px;margin-top:5px;cursor:pointer}
-.cmd{color:#00ffaa}.warn{color:yellow}.err{color:red}.ok{color:#00ff9c}.lock{color:#ff3030;font-weight:bold}
+.cmd{color:#00ffaa}.warn{color:yellow}.err{color:red}.ok{color:#00ff9c}
 </style>
 </head>
 <body>
@@ -36,34 +36,37 @@ Password:<br>
 
 <script>
 
-const terminal=document.getElementById("terminal")
-const input=document.getElementById("cmd")
-let currentUser=""
-let loginAttempts=0
+const terminal=document.getElementById("terminal");
+const input=document.getElementById("cmd");
+let currentUser="";
 
 const users=[
 {user:"commander",pass:"furrarmy"},
 {user:"director",pass:"reelmind"},
-{user:"admin",pass:"root"},
-{user:"h.k",pass:"12345"},
-{user:"isd",pass:"isd1505"}
-]
+{user:"admin",pass:"root"}
+];
+
+// simulated file system
+const files={
+"readme.txt":{content:"Welcome to the Reelmind / Furr Army command network."},
+"alliance.log":{content:"Treaty Signed: Reelmind Corporation + Furr Army Strategic Alliance."},
+"classified.dat":{encrypted:true,content:"BLACK ARCHIVE ENTRY: PROJECT NIGHT HOWL"}
+};
 
 function print(text,cls=""){
-const line=document.createElement("div")
-line.textContent=text
-if(cls) line.classList.add(cls)
-terminal.appendChild(line)
-terminal.scrollTop=terminal.scrollHeight
+const line=document.createElement("div");
+line.textContent=text;
+if(cls) line.classList.add(cls);
+terminal.appendChild(line);
+terminal.scrollTop=terminal.scrollHeight;
 }
 
-function slowPrint(text,speed=20,callback=null){
+function slowPrint(text,speed=20){
 let i=0
 const line=document.createElement("div")
 terminal.appendChild(line)
 function type(){
 if(i<text.length){line.textContent+=text[i];i++;setTimeout(type,speed)}
-else{if(callback)callback()}
 }
 type()
 }
@@ -77,7 +80,7 @@ slowPrint("Awaiting Authentication...")
 }
 
 function login(){
-const u=document.getElementById("user").value.toLowerCase()
+const u=document.getElementById("user").value
 const p=document.getElementById("pass").value
 const valid=users.find(x=>x.user===u && x.pass===p)
 
@@ -85,148 +88,19 @@ if(valid){
 currentUser=u
 print("ACCESS GRANTED","ok")
 print("Welcome "+currentUser)
-
-// special HK event
-if(currentUser==="h.k"){
-print("Background intrusion script detected...","warn")
-startHKHack()
-return
-}
-
-if(currentUser==="isd"){
-startISDSequence()
-return
-}
-
 print("Type 'help' for commands")
 
 document.getElementById("loginBox").style.display="none"
 document.getElementById("inputLine").style.display="block"
 input.focus()
-
 }else{
-loginAttempts++
 print("ACCESS DENIED","err")
-print("Failed Attempts: "+loginAttempts+" / 3","warn")
-
-if(loginAttempts>=3){
-lockdown()
 }
-}
-}
-
-function startISDSequence(){
-
-document.getElementById("loginBox").style.display="none"
-
-slowPrint("ISD Secure Node Connected...")
-slowPrint("Initializing Intelligence Systems Division Access...")
-
-startLoadingScreen("ISD AUTHENTICATION LOADING",60,()=>{
-startLoadingScreen("ACCESSING ISD SECURE DATABASE",60,()=>{
-print("ISD NETWORK READY","ok")
-print("Welcome Intelligence Systems Division Agent","ok")
-})
-})
-
-}
-
-function startLoadingScreen(title,seconds,callback){
-
-print(title,"warn")
-
-let progress=0
-const bar=document.createElement("div")
-terminal.appendChild(bar)
-
-const interval=setInterval(()=>{
-
-progress++
-let percent=Math.floor((progress/seconds)*100)
-let blocks=Math.floor(percent/5)
-
-bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
-
-if(progress>=seconds){
-clearInterval(interval)
-print("Loading Complete","ok")
-if(callback)callback()
-}
-
-terminal.scrollTop=terminal.scrollHeight
-
-},1000)
-
-}
-
-function startHKHack(){
-
-document.getElementById("loginBox").style.display="none"
-
-slowPrint("Unknown process started...")
-slowPrint("Connecting to external node...")
-slowPrint("Attempting system breach...")
-
-let progress=0
-const seconds=120
-
-const bar=document.createElement("div")
-terminal.appendChild(bar)
-
-const interval=setInterval(()=>{
-progress++
-
-let percent=Math.floor((progress/seconds)*100)
-let blocks=Math.floor(percent/5)
-
-bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
-
-if(progress>=seconds){
-clearInterval(interval)
-print("","lock")
-print("SECURITY AI DETECTED INTRUSION","err")
-print("Hack attempt failed","err")
-print("Reelmind Firewall terminated connection","warn")
-}
-
-terminal.scrollTop=terminal.scrollHeight
-
-},1000)
-
-}
-
-function lockdown(){
-print("","lock")
-slowPrint("!!! SECURITY LOCKDOWN INITIATED !!!",10)
-slowPrint("Unauthorized access detected",10)
-slowPrint("Locking terminal interface...",10)
-
-let flashes=0
-
-const flashInterval=setInterval(()=>{
-
-if(flashes%2===0){
-document.body.style.background="#200"
-}else{
-document.body.style.background="#000"
-}
-
-flashes++
-
-if(flashes>10){
-clearInterval(flashInterval)
-slowPrint("System rebooting...",15)
-
-setTimeout(()=>{
-location.reload()
-},2000)
-}
-
-},200)
 }
 
 function run(cmd){
 print(currentUser+"> "+cmd,"cmd")
+
 const args=cmd.split(" ")
 
 if(cmd==="help"){
@@ -263,21 +137,7 @@ if(!files[f]){print("File not found","err");return}
 if(files[f].encrypted){
 print("FILE ENCRYPTED","warn")
 }else{
-if(files[f].slow){
-const lines=files[f].content.split("
-")
-let i=0
-function next(){
-if(i<lines.length){
-slowPrint(lines[i])
-i++
-setTimeout(next,120)
-}
-}
-next()
-}else{
 print(files[f].content)
-}
 }
 }
 
@@ -336,23 +196,6 @@ input.value=""
 })
 
 boot()
-
-
-// --- Boot sequence fix ---
-const terminalElement = document.getElementById("terminal")
-function bootPrint(t){
- const line=document.createElement("div")
- line.textContent=t
- if(terminalElement) terminalElement.appendChild(line)
-}
-
-window.addEventListener("load",()=>{
- if(!terminalElement) return
- bootPrint("Reelmind Corp Secure System Booting...")
- bootPrint("Initializing Furr Army Command Interface...")
- bootPrint("Loading Secure Modules...")
- bootPrint("System Ready.")
-})
 
 </script>
 </body>
