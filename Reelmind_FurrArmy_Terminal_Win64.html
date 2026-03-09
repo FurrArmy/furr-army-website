@@ -52,6 +52,46 @@ const users=[
 const files={
 "readme.txt":{content:"Welcome to the Reelmind / Furr Army command network."},
 "alliance.log":{content:"Treaty Signed: Reelmind Corporation + Furr Army Strategic Alliance."},
+"classified.dat":{encrypted:true,content:"BLACK ARCHIVE ENTRY: PROJECT NIGHT HOWL"},
+"protocol_sd.txt":{slow:true,content:`⚠ PROTOCOL SD
+Strategic Defense Contingency Directive
+
+Classification: RED / BLACK CLEARANCE
+
+Official Designation
+SD = Strategic Defense
+
+Protocol SD activates when the Furr Army detects:
+- Large-scale external threat buildup
+- Coordinated attack planning
+- Multiple divisions compromised
+- Intelligence indicating imminent Code Red escalation
+
+Purpose of Protocol SD
+- Harden base infrastructure
+- Lock non‑essential systems
+- Pre‑deploy heavy units
+- Increase monitoring
+
+Activation Authority
+- AFC High Command
+- Director-General FAIA
+- FAISD Commander (emergency)
+
+Operational Changes
+- 6th FATD defensive formation
+- 12th FAHT rapid standby
+- 4th AFC air patrol readiness
+- FAIA surveillance cycle active
+- FAISD integrity audits
+
+Hidden Clause
+If three divisions report compromise simultaneously,
+Protocol SD escalates automatically to: PROTOCOL OMEGA.
+
+"Prepare Before They Strike."`}
+},
+"alliance.log":{content:"Treaty Signed: Reelmind Corporation + Furr Army Strategic Alliance."},
 "classified.dat":{encrypted:true,content:"BLACK ARCHIVE ENTRY: PROJECT NIGHT HOWL"}
 }
 
@@ -269,7 +309,21 @@ if(!files[f]){print("File not found","err");return}
 if(files[f].encrypted){
 print("FILE ENCRYPTED","warn")
 }else{
+if(files[f].slow){
+const lines=files[f].content.split("
+")
+let i=0
+function next(){
+if(i<lines.length){
+slowPrint(lines[i])
+i++
+setTimeout(next,120)
+}
+}
+next()
+}else{
 print(files[f].content)
+}
 }
 }
 
@@ -332,4 +386,3 @@ boot()
 </script>
 </body>
 </html>
-
