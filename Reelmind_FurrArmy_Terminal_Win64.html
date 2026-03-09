@@ -73,11 +73,36 @@ type()
 }
 
 function boot(){
+
 slowPrint("Booting Secure Command Environment...")
+
+let percent=0
+const bar=document.createElement("div")
+terminal.appendChild(bar)
+
+const interval=setInterval(()=>{
+
+percent+=4
+
+let blocks=Math.floor(percent/5)
+bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
+
+terminal.scrollTop=terminal.scrollHeight
+
+if(percent>=100){
+clearInterval(interval)
+
+setTimeout(()=>{
 slowPrint("Kernel: Windows x64 Secure Build")
 slowPrint("Alliance Network: Reelmind Corp + Furr Army")
 slowPrint("Security Modules Online")
 slowPrint("Awaiting Authentication...")
+},300)
+
+}
+
+},120)
+
 }
 
 function login(){
