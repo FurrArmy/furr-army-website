@@ -82,7 +82,7 @@ terminal.appendChild(bar)
 
 const interval=setInterval(()=>{
 
-percent+=4
+percent+=1   // increase slowly
 
 let blocks=Math.floor(percent/5)
 bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
@@ -96,15 +96,17 @@ setTimeout(()=>{
 slowPrint("Kernel: Windows x64 Secure Build")
 slowPrint("Alliance Network: Reelmind Corp + Furr Army")
 slowPrint("Security Modules Online")
+slowPrint("Initializing Firewall...")
+slowPrint("Loading Alliance Command Modules...")
+slowPrint("Network Authentication Services Online")
 slowPrint("Awaiting Authentication...")
-},300)
+},500)
 
 }
 
-},120)
+},1000) // 1 second per step (~100 seconds total)
 
 }
-
 function login(){
 const u=document.getElementById("user").value
 const p=document.getElementById("pass").value
