@@ -12,8 +12,7 @@ body{background:#0b0f1a;color:#00ff9c;font-family:Consolas,monospace;padding:30p
 input{background:black;border:none;color:#00ff9c;font-family:Consolas,monospace;font-size:14px;width:80%;outline:none}
 #loginBox{background:black;padding:20px;border-top:1px solid #1e2a44}
 button{background:#00ff9c;border:none;padding:5px 12px;margin-top:5px;cursor:pointer}
-.cmd{color:#00ffaa}.warn{color:yellow}.err{color:red}.ok{color:#00ff9c}
-.lock{color:#ff3030;font-weight:bold}
+.cmd{color:#00ffaa}.warn{color:yellow}.err{color:red}.ok{color:#00ff9c}.lock{color:#ff3030;font-weight:bold}
 </style>
 </head>
 <body>
@@ -45,7 +44,8 @@ let loginAttempts=0
 const users=[
 {user:"commander",pass:"furrarmy"},
 {user:"director",pass:"reelmind"},
-{user:"admin",pass:"root"}
+{user:"admin",pass:"root"},
+{user:"h.k",pass:"12345"}
 ]
 
 const files={
@@ -62,12 +62,13 @@ terminal.appendChild(line)
 terminal.scrollTop=terminal.scrollHeight
 }
 
-function slowPrint(text,speed=20){
+function slowPrint(text,speed=20,callback=null){
 let i=0
 const line=document.createElement("div")
 terminal.appendChild(line)
 function type(){
 if(i<text.length){line.textContent+=text[i];i++;setTimeout(type,speed)}
+else{if(callback)callback()}
 }
 type()
 }
@@ -81,7 +82,7 @@ slowPrint("Awaiting Authentication...")
 }
 
 function login(){
-const u=document.getElementById("user").value
+const u=document.getElementById("user").value.toLowerCase()
 const p=document.getElementById("pass").value
 const valid=users.find(x=>x.user===u && x.pass===p)
 
@@ -89,11 +90,20 @@ if(valid){
 currentUser=u
 print("ACCESS GRANTED","ok")
 print("Welcome "+currentUser)
+
+// special HK event
+if(currentUser==="h.k"){
+print("Background intrusion script detected...","warn")
+startHKHack()
+return
+}
+
 print("Type 'help' for commands")
 
 document.getElementById("loginBox").style.display="none"
 document.getElementById("inputLine").style.display="block"
 input.focus()
+
 }else{
 loginAttempts++
 print("ACCESS DENIED","err")
@@ -103,6 +113,42 @@ if(loginAttempts>=3){
 lockdown()
 }
 }
+}
+
+function startHKHack(){
+
+document.getElementById("loginBox").style.display="none"
+
+slowPrint("Unknown process started...")
+slowPrint("Connecting to external node...")
+slowPrint("Attempting system breach...")
+
+let progress=0
+const seconds=120
+
+const bar=document.createElement("div")
+terminal.appendChild(bar)
+
+const interval=setInterval(()=>{
+progress++
+
+let percent=Math.floor((progress/seconds)*100)
+let blocks=Math.floor(percent/5)
+
+bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
+
+if(progress>=seconds){
+clearInterval(interval)
+print("","lock")
+print("SECURITY AI DETECTED INTRUSION","err")
+print("Hack attempt failed","err")
+print("Reelmind Firewall terminated connection","warn")
+}
+
+terminal.scrollTop=terminal.scrollHeight
+
+},1000)
+
 }
 
 function lockdown(){
