@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Reelmind Corp Secure Terminal - Win64</title>
+<title>Reelmind Corp / Furr Army Secure Terminal - Win64</title>
 <style>
 body{
 background:#0b0f1a;
@@ -37,6 +37,7 @@ white-space:pre-line;
 background:black;
 padding:10px;
 border-top:1px solid #1e2a44;
+display:none;
 }
 
 input{
@@ -49,10 +50,21 @@ width:80%;
 outline:none;
 }
 
-.cmd{
-color:#00ffaa;
+#loginBox{
+background:black;
+padding:20px;
+border-top:1px solid #1e2a44;
 }
 
+button{
+background:#00ff9c;
+border:none;
+padding:5px 12px;
+margin-top:5px;
+cursor:pointer;
+}
+
+.cmd{color:#00ffaa;}
 .warn{color:yellow;}
 .err{color:red;}
 .ok{color:#00ff9c;}
@@ -62,12 +74,20 @@ color:#00ffaa;
 
 <div id="window">
 
-<div id="titlebar">Reelmind Corporation Secure Terminal [Windows x64 Build]</div>
+<div id="titlebar">Reelmind Corporation / Furr Army Secure Command Terminal [Windows x64]</div>
 
 <div id="terminal"></div>
 
+<div id="loginBox">
+Username:<br>
+<input id="user"><br><br>
+Password:<br>
+<input id="pass" type="password"><br><br>
+<button onclick="login()">Login</button>
+</div>
+
 <div id="inputLine">
-> <input id="cmd" autocomplete="off" autofocus>
+> <input id="cmd" autocomplete="off">
 </div>
 
 </div>
@@ -77,7 +97,13 @@ color:#00ffaa;
 const terminal=document.getElementById("terminal");
 const input=document.getElementById("cmd");
 
-let user="guest";
+let currentUser="";
+
+const users=[
+{user:"commander",pass:"furrarmy"},
+{user:"director",pass:"reelmind"},
+{user:"admin",pass:"root"}
+];
 
 function print(text,cls=""){
 const line=document.createElement("div");
@@ -106,16 +132,42 @@ type();
 }
 
 function boot(){
-slowPrint("Reelmind Corp Secure Command Environment",20);
-slowPrint("Windows x64 Kernel Loaded",20);
-slowPrint("Initializing system modules...",20);
-slowPrint("Security layer active",20);
-slowPrint("Type 'help' for commands",20);
+slowPrint("Booting Secure Command Environment...");
+slowPrint("Kernel: Windows x64 Secure Build");
+slowPrint("Organization Link: Reelmind Corp + Furr Army");
+slowPrint("Initializing security modules...");
+slowPrint("Awaiting authentication...");
+}
+
+function login(){
+
+const u=document.getElementById("user").value;
+const p=document.getElementById("pass").value;
+
+const valid=users.find(x=>x.user===u && x.pass===p);
+
+if(valid){
+
+currentUser=u;
+
+print("Access Granted","ok");
+print("Welcome "+currentUser);
+print("Type 'help' for commands");
+
+
+document.getElementById("loginBox").style.display="none";
+document.getElementById("inputLine").style.display="block";
+input.focus();
+
+}else{
+print("Access Denied","err");
+}
+
 }
 
 function run(cmd){
 
-print(user+"> "+cmd,"cmd");
+print(currentUser+"> "+cmd,"cmd");
 
 if(cmd==="help"){
 print("Available commands:");
@@ -125,6 +177,7 @@ print("system");
 print("hack1");
 print("hack2");
 print("hack3");
+print("archives");
 }
 
 else if(cmd==="clear"){
@@ -133,8 +186,14 @@ terminal.innerHTML="";
 
 else if(cmd==="system"){
 print("System: Windows x64 Secure Terminal");
-print("Corp: Reelmind Corporation");
-print("Security: ACTIVE");
+print("Organization: Reelmind Corporation");
+print("Alliance: Furr Army Military Network");
+print("Security Status: ACTIVE");
+}
+
+else if(cmd==="archives"){
+print("Opening Classified Archive Database...");
+print("Access Level Required: HIGH COMMAND","warn");
 }
 
 else if(cmd==="hack1"){
@@ -152,6 +211,7 @@ hackProcess(180);
 else{
 print("Unknown command","err");
 }
+
 }
 
 function hackProcess(seconds){
@@ -174,8 +234,8 @@ if(progress>=seconds){
 
 clearInterval(interval);
 
-print("ACCESS DENIED","err");
-print("Reelmind Firewall blocked intrusion","warn");
+print("INTRUSION BLOCKED","err");
+print("Reelmind Corp Firewall prevented breach","warn");
 
 }
 
