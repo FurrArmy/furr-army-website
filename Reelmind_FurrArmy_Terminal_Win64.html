@@ -74,37 +74,71 @@ type()
 
 function boot(){
 
-slowPrint("Booting Secure Command Environment...")
+print("Initializing Secure Boot Environment...")
+print("Reelmind Corp / Furr Army Unified Command OS")
 
-let percent=0
-const bar=document.createElement("div")
+let percent = 0
+
+const bar = document.createElement("div")
 terminal.appendChild(bar)
 
-const interval=setInterval(()=>{
+const bootLogs = [
+"Loading kernel modules...",
+"Mounting encrypted file systems...",
+"Checking memory sectors...",
+"Initializing GPU interface...",
+"Starting secure network layer...",
+"Connecting alliance command grid...",
+"Loading firewall services...",
+"Synchronizing military databases...",
+"Verifying encrypted archives...",
+"Launching command shell...",
+"Starting intrusion detection...",
+"Authenticating system drivers...",
+"Activating satellite uplink...",
+"Initializing defense protocols..."
+]
 
-percent+=1   // increase slowly
+function updateBoot(){
 
-let blocks=Math.floor(percent/5)
-bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
+percent += Math.floor(Math.random()*3)+1
 
-terminal.scrollTop=terminal.scrollHeight
+if(percent>100) percent=100
 
-if(percent>=100){
-clearInterval(interval)
+let blocks = Math.floor(percent/5)
+bar.textContent = "["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
+
+terminal.scrollTop = terminal.scrollHeight
+
+// occasionally print system logs
+if(Math.random() < 0.35 && bootLogs.length>0){
+let msg = bootLogs.shift()
+print(msg)
+}
+
+if(percent < 100){
+
+// random delay for realism
+let delay = 400 + Math.random()*1200
+
+setTimeout(updateBoot, delay)
+
+}else{
 
 setTimeout(()=>{
-slowPrint("Kernel: Windows x64 Secure Build")
-slowPrint("Alliance Network: Reelmind Corp + Furr Army")
-slowPrint("Security Modules Online")
-slowPrint("Initializing Firewall...")
-slowPrint("Loading Alliance Command Modules...")
-slowPrint("Network Authentication Services Online")
-slowPrint("Awaiting Authentication...")
-},500)
+print("Security Modules Online","ok")
+print("Alliance Network Link Established","ok")
+print("System Integrity Check: PASSED","ok")
+print("")
+print("Secure Terminal Ready")
+print("Awaiting Authentication...")
+},1000)
 
 }
 
-},1000) // 1 second per step (~100 seconds total)
+}
+
+setTimeout(updateBoot,800)
 
 }
   
