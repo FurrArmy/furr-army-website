@@ -45,7 +45,8 @@ const users=[
 {user:"commander",pass:"furrarmy"},
 {user:"director",pass:"reelmind"},
 {user:"admin",pass:"root"},
-{user:"h.k",pass:"12345"}
+{user:"h.k",pass:"12345"},
+{user:"isd",pass:"isd1505"}
 ]
 
 const files={
@@ -98,6 +99,11 @@ startHKHack()
 return
 }
 
+if(currentUser==="isd"){
+startISDSequence()
+return
+}
+
 print("Type 'help' for commands")
 
 document.getElementById("loginBox").style.display="none"
@@ -113,6 +119,50 @@ if(loginAttempts>=3){
 lockdown()
 }
 }
+}
+
+function startISDSequence(){
+
+document.getElementById("loginBox").style.display="none"
+
+slowPrint("ISD Secure Node Connected...")
+slowPrint("Initializing Intelligence Systems Division Access...")
+
+startLoadingScreen("ISD AUTHENTICATION LOADING",60,()=>{
+startLoadingScreen("ACCESSING ISD SECURE DATABASE",60,()=>{
+print("ISD NETWORK READY","ok")
+print("Welcome Intelligence Systems Division Agent","ok")
+})
+})
+
+}
+
+function startLoadingScreen(title,seconds,callback){
+
+print(title,"warn")
+
+let progress=0
+const bar=document.createElement("div")
+terminal.appendChild(bar)
+
+const interval=setInterval(()=>{
+
+progress++
+let percent=Math.floor((progress/seconds)*100)
+let blocks=Math.floor(percent/5)
+
+bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
+
+if(progress>=seconds){
+clearInterval(interval)
+print("Loading Complete","ok")
+if(callback)callback()
+}
+
+terminal.scrollTop=terminal.scrollHeight
+
+},1000)
+
 }
 
 function startHKHack(){
@@ -282,3 +332,4 @@ boot()
 </script>
 </body>
 </html>
+
