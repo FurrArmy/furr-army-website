@@ -13,6 +13,7 @@ input{background:black;border:none;color:#00ff9c;font-family:Consolas,monospace;
 #loginBox{background:black;padding:20px;border-top:1px solid #1e2a44}
 button{background:#00ff9c;border:none;padding:5px 12px;margin-top:5px;cursor:pointer}
 .cmd{color:#00ffaa}.warn{color:yellow}.err{color:red}.ok{color:#00ff9c}
+.lock{color:#ff3030;font-weight:bold}
 </style>
 </head>
 <body>
@@ -36,29 +37,29 @@ Password:<br>
 
 <script>
 
-const terminal=document.getElementById("terminal");
-const input=document.getElementById("cmd");
-let currentUser="";
+const terminal=document.getElementById("terminal")
+const input=document.getElementById("cmd")
+let currentUser=""
+let loginAttempts=0
 
 const users=[
 {user:"commander",pass:"furrarmy"},
 {user:"director",pass:"reelmind"},
 {user:"admin",pass:"root"}
-];
+]
 
-// simulated file system
 const files={
 "readme.txt":{content:"Welcome to the Reelmind / Furr Army command network."},
 "alliance.log":{content:"Treaty Signed: Reelmind Corporation + Furr Army Strategic Alliance."},
 "classified.dat":{encrypted:true,content:"BLACK ARCHIVE ENTRY: PROJECT NIGHT HOWL"}
-};
+}
 
 function print(text,cls=""){
-const line=document.createElement("div");
-line.textContent=text;
-if(cls) line.classList.add(cls);
-terminal.appendChild(line);
-terminal.scrollTop=terminal.scrollHeight;
+const line=document.createElement("div")
+line.textContent=text
+if(cls) line.classList.add(cls)
+terminal.appendChild(line)
+terminal.scrollTop=terminal.scrollHeight
 }
 
 function slowPrint(text,speed=20){
@@ -94,13 +95,48 @@ document.getElementById("loginBox").style.display="none"
 document.getElementById("inputLine").style.display="block"
 input.focus()
 }else{
+loginAttempts++
 print("ACCESS DENIED","err")
+print("Failed Attempts: "+loginAttempts+" / 3","warn")
+
+if(loginAttempts>=3){
+lockdown()
 }
+}
+}
+
+function lockdown(){
+print("","lock")
+slowPrint("!!! SECURITY LOCKDOWN INITIATED !!!",10)
+slowPrint("Unauthorized access detected",10)
+slowPrint("Locking terminal interface...",10)
+
+let flashes=0
+
+const flashInterval=setInterval(()=>{
+
+if(flashes%2===0){
+document.body.style.background="#200"
+}else{
+document.body.style.background="#000"
+}
+
+flashes++
+
+if(flashes>10){
+clearInterval(flashInterval)
+slowPrint("System rebooting...",15)
+
+setTimeout(()=>{
+location.reload()
+},2000)
+}
+
+},200)
 }
 
 function run(cmd){
 print(currentUser+"> "+cmd,"cmd")
-
 const args=cmd.split(" ")
 
 if(cmd==="help"){
