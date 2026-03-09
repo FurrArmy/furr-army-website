@@ -383,6 +383,23 @@ input.value=""
 
 boot()
 
+
+// --- Boot sequence fix ---
+const terminalElement = document.getElementById("terminal")
+function bootPrint(t){
+ const line=document.createElement("div")
+ line.textContent=t
+ if(terminalElement) terminalElement.appendChild(line)
+}
+
+window.addEventListener("load",()=>{
+ if(!terminalElement) return
+ bootPrint("Reelmind Corp Secure System Booting...")
+ bootPrint("Initializing Furr Army Command Interface...")
+ bootPrint("Loading Secure Modules...")
+ bootPrint("System Ready.")
+})
+
 </script>
 </body>
 </html>
