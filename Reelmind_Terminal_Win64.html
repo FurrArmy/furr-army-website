@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Reelmind Corp Secure Terminal - Win64</title>
+<style>
+body{
+background:#0b0f1a;
+color:#00ff9c;
+font-family:Consolas,monospace;
+padding:30px;
+}
+
+#window{
+width:900px;
+margin:auto;
+border:2px solid #1e2a44;
+box-shadow:0 0 20px #000;
+}
+
+#titlebar{
+background:#1e2a44;
+color:white;
+padding:6px;
+font-size:14px;
+}
+
+#terminal{
+background:black;
+height:500px;
+overflow-y:auto;
+padding:10px;
+white-space:pre-line;
+}
+
+#inputLine{
+background:black;
+padding:10px;
+border-top:1px solid #1e2a44;
+}
+
+input{
+background:black;
+border:none;
+color:#00ff9c;
+font-family:Consolas,monospace;
+font-size:14px;
+width:80%;
+outline:none;
+}
+
+.cmd{
+color:#00ffaa;
+}
+
+.warn{color:yellow;}
+.err{color:red;}
+.ok{color:#00ff9c;}
+</style>
+</head>
+<body>
+
+<div id="window">
+
+<div id="titlebar">Reelmind Corporation Secure Terminal [Windows x64 Build]</div>
+
+<div id="terminal"></div>
+
+<div id="inputLine">
+> <input id="cmd" autocomplete="off" autofocus>
+</div>
+
+</div>
+
+<script>
+
+const terminal=document.getElementById("terminal");
+const input=document.getElementById("cmd");
+
+let user="guest";
+
+function print(text,cls=""){
+const line=document.createElement("div");
+line.textContent=text;
+if(cls) line.classList.add(cls);
+terminal.appendChild(line);
+terminal.scrollTop=terminal.scrollHeight;
+}
+
+function slowPrint(text,speed=25,callback=null){
+let i=0;
+const line=document.createElement("div");
+terminal.appendChild(line);
+
+function type(){
+if(i<text.length){
+line.textContent+=text.charAt(i);
+i++;
+setTimeout(type,speed);
+}else{
+if(callback) callback();
+}
+}
+
+type();
+}
+
+function boot(){
+slowPrint("Reelmind Corp Secure Command Environment",20);
+slowPrint("Windows x64 Kernel Loaded",20);
+slowPrint("Initializing system modules...",20);
+slowPrint("Security layer active",20);
+slowPrint("Type 'help' for commands",20);
+}
+
+function run(cmd){
+
+print(user+"> "+cmd,"cmd");
+
+if(cmd==="help"){
+print("Available commands:");
+print("help");
+print("clear");
+print("system");
+print("hack1");
+print("hack2");
+print("hack3");
+}
+
+else if(cmd==="clear"){
+terminal.innerHTML="";
+}
+
+else if(cmd==="system"){
+print("System: Windows x64 Secure Terminal");
+print("Corp: Reelmind Corporation");
+print("Security: ACTIVE");
+}
+
+else if(cmd==="hack1"){
+hackProcess(60);
+}
+
+else if(cmd==="hack2"){
+hackProcess(120);
+}
+
+else if(cmd==="hack3"){
+hackProcess(180);
+}
+
+else{
+print("Unknown command","err");
+}
+}
+
+function hackProcess(seconds){
+
+let progress=0;
+
+const bar=document.createElement("div");
+terminal.appendChild(bar);
+
+const interval=setInterval(()=>{
+
+progress++;
+
+let percent=Math.floor((progress/seconds)*100);
+let blocks=Math.floor(percent/5);
+
+bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%";
+
+if(progress>=seconds){
+
+clearInterval(interval);
+
+print("ACCESS DENIED","err");
+print("Reelmind Firewall blocked intrusion","warn");
+
+}
+
+terminal.scrollTop=terminal.scrollHeight;
+
+},1000);
+
+}
+
+input.addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+run(input.value.toLowerCase());
+input.value="";
+}
+});
+
+boot();
+
+</script>
+
+</body>
+</html>
