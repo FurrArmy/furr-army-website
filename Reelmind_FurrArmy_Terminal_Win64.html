@@ -4,78 +4,21 @@
 <meta charset="UTF-8">
 <title>Reelmind Corp / Furr Army Secure Terminal - Win64</title>
 <style>
-body{
-background:#0b0f1a;
-color:#00ff9c;
-font-family:Consolas,monospace;
-padding:30px;
-}
-
-#window{
-width:900px;
-margin:auto;
-border:2px solid #1e2a44;
-box-shadow:0 0 20px #000;
-}
-
-#titlebar{
-background:#1e2a44;
-color:white;
-padding:6px;
-font-size:14px;
-}
-
-#terminal{
-background:black;
-height:500px;
-overflow-y:auto;
-padding:10px;
-white-space:pre-line;
-}
-
-#inputLine{
-background:black;
-padding:10px;
-border-top:1px solid #1e2a44;
-display:none;
-}
-
-input{
-background:black;
-border:none;
-color:#00ff9c;
-font-family:Consolas,monospace;
-font-size:14px;
-width:80%;
-outline:none;
-}
-
-#loginBox{
-background:black;
-padding:20px;
-border-top:1px solid #1e2a44;
-}
-
-button{
-background:#00ff9c;
-border:none;
-padding:5px 12px;
-margin-top:5px;
-cursor:pointer;
-}
-
-.cmd{color:#00ffaa;}
-.warn{color:yellow;}
-.err{color:red;}
-.ok{color:#00ff9c;}
+body{background:#0b0f1a;color:#00ff9c;font-family:Consolas,monospace;padding:30px}
+#window{width:900px;margin:auto;border:2px solid #1e2a44;box-shadow:0 0 20px #000}
+#titlebar{background:#1e2a44;color:white;padding:6px;font-size:14px}
+#terminal{background:black;height:500px;overflow-y:auto;padding:10px;white-space:pre-line}
+#inputLine{background:black;padding:10px;border-top:1px solid #1e2a44;display:none}
+input{background:black;border:none;color:#00ff9c;font-family:Consolas,monospace;font-size:14px;width:80%;outline:none}
+#loginBox{background:black;padding:20px;border-top:1px solid #1e2a44}
+button{background:#00ff9c;border:none;padding:5px 12px;margin-top:5px;cursor:pointer}
+.cmd{color:#00ffaa}.warn{color:yellow}.err{color:red}.ok{color:#00ff9c}
 </style>
 </head>
 <body>
 
 <div id="window">
-
 <div id="titlebar">Reelmind Corporation / Furr Army Secure Command Terminal [Windows x64]</div>
-
 <div id="terminal"></div>
 
 <div id="loginBox">
@@ -89,14 +32,12 @@ Password:<br>
 <div id="inputLine">
 > <input id="cmd" autocomplete="off">
 </div>
-
 </div>
 
 <script>
 
 const terminal=document.getElementById("terminal");
 const input=document.getElementById("cmd");
-
 let currentUser="";
 
 const users=[
@@ -104,6 +45,13 @@ const users=[
 {user:"director",pass:"reelmind"},
 {user:"admin",pass:"root"}
 ];
+
+// simulated file system
+const files={
+"readme.txt":{content:"Welcome to the Reelmind / Furr Army command network."},
+"alliance.log":{content:"Treaty Signed: Reelmind Corporation + Furr Army Strategic Alliance."},
+"classified.dat":{encrypted:true,content:"BLACK ARCHIVE ENTRY: PROJECT NIGHT HOWL"}
+};
 
 function print(text,cls=""){
 const line=document.createElement("div");
@@ -113,148 +61,142 @@ terminal.appendChild(line);
 terminal.scrollTop=terminal.scrollHeight;
 }
 
-function slowPrint(text,speed=25,callback=null){
-let i=0;
-const line=document.createElement("div");
-terminal.appendChild(line);
-
+function slowPrint(text,speed=20){
+let i=0
+const line=document.createElement("div")
+terminal.appendChild(line)
 function type(){
-if(i<text.length){
-line.textContent+=text.charAt(i);
-i++;
-setTimeout(type,speed);
-}else{
-if(callback) callback();
+if(i<text.length){line.textContent+=text[i];i++;setTimeout(type,speed)}
 }
-}
-
-type();
+type()
 }
 
 function boot(){
-slowPrint("Booting Secure Command Environment...");
-slowPrint("Kernel: Windows x64 Secure Build");
-slowPrint("Organization Link: Reelmind Corp + Furr Army");
-slowPrint("Initializing security modules...");
-slowPrint("Awaiting authentication...");
+slowPrint("Booting Secure Command Environment...")
+slowPrint("Kernel: Windows x64 Secure Build")
+slowPrint("Alliance Network: Reelmind Corp + Furr Army")
+slowPrint("Security Modules Online")
+slowPrint("Awaiting Authentication...")
 }
 
 function login(){
-
-const u=document.getElementById("user").value;
-const p=document.getElementById("pass").value;
-
-const valid=users.find(x=>x.user===u && x.pass===p);
+const u=document.getElementById("user").value
+const p=document.getElementById("pass").value
+const valid=users.find(x=>x.user===u && x.pass===p)
 
 if(valid){
+currentUser=u
+print("ACCESS GRANTED","ok")
+print("Welcome "+currentUser)
+print("Type 'help' for commands")
 
-currentUser=u;
-
-print("Access Granted","ok");
-print("Welcome "+currentUser);
-print("Type 'help' for commands");
-
-
-document.getElementById("loginBox").style.display="none";
-document.getElementById("inputLine").style.display="block";
-input.focus();
-
+document.getElementById("loginBox").style.display="none"
+document.getElementById("inputLine").style.display="block"
+input.focus()
 }else{
-print("Access Denied","err");
+print("ACCESS DENIED","err")
 }
-
 }
 
 function run(cmd){
+print(currentUser+"> "+cmd,"cmd")
 
-print(currentUser+"> "+cmd,"cmd");
+const args=cmd.split(" ")
 
 if(cmd==="help"){
-print("Available commands:");
-print("help");
-print("clear");
-print("system");
-print("hack1");
-print("hack2");
-print("hack3");
-print("archives");
+print("Commands:")
+print("help")
+print("clear")
+print("system")
+print("dir")
+print("open <file>")
+print("decrypt <file>")
+print("hack1 hack2 hack3")
 }
 
 else if(cmd==="clear"){
-terminal.innerHTML="";
+terminal.innerHTML=""
 }
 
 else if(cmd==="system"){
-print("System: Windows x64 Secure Terminal");
-print("Organization: Reelmind Corporation");
-print("Alliance: Furr Army Military Network");
-print("Security Status: ACTIVE");
+print("System: Windows x64 Secure Terminal")
+print("Corp: Reelmind Corporation")
+print("Military: Furr Army Alliance Network")
+print("Security Status: ACTIVE")
 }
 
-else if(cmd==="archives"){
-print("Opening Classified Archive Database...");
-print("Access Level Required: HIGH COMMAND","warn");
+else if(cmd==="dir"){
+print("Directory Listing:")
+for(const f in files){print(" - "+f)}
 }
 
-else if(cmd==="hack1"){
-hackProcess(60);
+else if(args[0]==="open"){
+const f=args[1]
+if(!files[f]){print("File not found","err");return}
+
+if(files[f].encrypted){
+print("FILE ENCRYPTED","warn")
+}else{
+print(files[f].content)
+}
 }
 
-else if(cmd==="hack2"){
-hackProcess(120);
+else if(args[0]==="decrypt"){
+const f=args[1]
+if(!files[f]){print("File not found","err");return}
+
+if(!files[f].encrypted){
+print("File already readable")
+return
 }
 
-else if(cmd==="hack3"){
-hackProcess(180);
+slowPrint("Decrypting file...")
+setTimeout(()=>{
+print("DECRYPTION COMPLETE","ok")
+print(files[f].content)
+files[f].encrypted=false
+},2000)
 }
+
+else if(cmd==="hack1"){hackProcess(60)}
+else if(cmd==="hack2"){hackProcess(120)}
+else if(cmd==="hack3"){hackProcess(180)}
 
 else{
-print("Unknown command","err");
+print("Unknown command","err")
 }
-
 }
 
 function hackProcess(seconds){
-
-let progress=0;
-
-const bar=document.createElement("div");
-terminal.appendChild(bar);
+let progress=0
+const bar=document.createElement("div")
+terminal.appendChild(bar)
 
 const interval=setInterval(()=>{
-
-progress++;
-
-let percent=Math.floor((progress/seconds)*100);
-let blocks=Math.floor(percent/5);
-
-bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%";
+progress++
+let percent=Math.floor((progress/seconds)*100)
+let blocks=Math.floor(percent/5)
+bar.textContent="["+"█".repeat(blocks)+"░".repeat(20-blocks)+"] "+percent+"%"
 
 if(progress>=seconds){
-
-clearInterval(interval);
-
-print("INTRUSION BLOCKED","err");
-print("Reelmind Corp Firewall prevented breach","warn");
-
+clearInterval(interval)
+print("INTRUSION BLOCKED","err")
+print("Reelmind Firewall prevented breach","warn")
 }
 
-terminal.scrollTop=terminal.scrollHeight;
-
-},1000);
-
+terminal.scrollTop=terminal.scrollHeight
+},1000)
 }
 
-input.addEventListener("keydown",function(e){
+input.addEventListener("keydown",e=>{
 if(e.key==="Enter"){
-run(input.value.toLowerCase());
-input.value="";
+run(input.value.toLowerCase())
+input.value=""
 }
-});
+})
 
-boot();
+boot()
 
 </script>
-
 </body>
 </html>
